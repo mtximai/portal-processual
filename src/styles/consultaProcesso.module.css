@@ -1,0 +1,18 @@
+.single {
+   background: #fff;
+   font-size: large;
+
+   margin: 5px;
+   padding: 2px;
+}
+
+.single:hover {
+   border: 2px solid #4979ff;
+   border-radius: 5px;
+   margin: 5px;
+   padding: 2px;
+}
+
+.texto {
+   font-size: large;
+}
