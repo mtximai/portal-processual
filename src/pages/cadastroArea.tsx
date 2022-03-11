@@ -12,86 +12,83 @@ import {
   Card, CardHeader, CardContent,
   Divider,
   TextField,
-  Tooltip, Box, Grid
+  Box, Grid, Typography
 } from '@mui/material';
 
-import { Help, Search } from '@mui/icons-material';
 import CircularProgress from '@mui/material/CircularProgress';
+import BtnProgress     from '../components/BtnProgress'
 
 
-export default function CadastroArea() {
+function obterDados() {
 
-  const columns = [
-    { field: 'id', headerName: 'Código', width: 90 },
-    { field: 'nome',
-      headerName: 'Nome',
-      width: 400,
-      editable: false}
-  ];
+  return new Promise( (resolve, reject) => {
 
-  const [linhas, setLinhas] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  
-  
-  // Obtém dados da API  
-  useEffect(() => {
     fetch("http://localhost:2446/api/portaljurisdicionado/AreaAtual")
       .then((data) => data.json())
       .then((data) => {
+        resolve(data)
+      })
+      .catch(e => reject(e))
 
-      //let j = JSON.parse(data)
-      //var x = j.map((e : Area, i : number) => { return {"id": i, "nome": e.nome}} )
+  })
 
-      setLinhas(data)
-      setIsLoading(false)
-    })
-
-  }, [])
+}
 
 
-  function obterDados() {
-    if (isLoading)
-      setIsLoading(false)
-    else
-      setIsLoading(true)
+const progress = <CircularProgress color="secondary" size={20} />
+
+
+// Componente
+export default function CadastroArea() {
+
+  const [dados, setDados] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [msg, setMsg] = useState('');
+
+  
+  // Colunas da GRID
+  const columns = [
+    { field: 'id', headerName: 'Código', width: 90 },
+    { field: 'nome', headerName: 'Nome', width: 400, editable: false}
+  ];
+  
+
+  function clickPesquisar() {
+
+    setLoading(true)
+    setMsg('')
+
+    const d = obterDados()
+              .then((r: object[]) => {
+                setDados(r)
+                setLoading(false)
+                setMsg(`Processamento concluído: ${r.length} registro(s) encotrados!`)
+              })
+              .catch( (e) => {
+                setDados([])
+                setLoading(false)
+                setMsg('Erro: falha na obtenção dos dados!')
+              })
   }
-
 
   return (
     <Card>
-      <CardHeader title="Cadastro de Áreas" />
+      <CardHeader title="Cadastro de Áreas ativas" />
 
       <CardContent>
 
-        <Box display="flex" justifyContent="flex-begin" p={2} >
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
-          <Tooltip title="Preencha o campo protocolo e clique no botão para pesquisar">
-            <Help sx={{ color: 'blue', mr: 1, my: 0.5 } } />
-          </Tooltip>
+          <BtnProgress loading={ loading } onClick={ clickPesquisar } />
 
-          <Button color="primary" variant="contained" size="small" startIcon={<Search />}
-              onClick={() => { obterDados() }} >
-              Pesquisar
-          </Button>
-
-          {isLoading  && <CircularProgress color="secondary" />} 
-          {!isLoading && <h3><span>  Successfully API Loaded Data </span></h3>}
+          <Typography sx={{ fontWeight: 'bold', marginLeft:'10px', color: `${ msg.startsWith('Erro:') ? 'red':'blue' }` }}>{msg}</Typography>
 
         </Box>
 
-        <Divider />
-
-        <Grid container spacing={3}>
-            <Grid item md={2} xs={2} >
-              <Box p={2}>
-                <TextField id="idQtd" label="Registros" value={linhas.length} InputProps={{ readOnly: true }} size="small"
-                  variant="outlined" />
-                </Box>
-            </Grid>
-        </Grid>
+        <Divider sx={{marginTop: '10px'}} />
 
         <div style={{ height: 400, width: '100%' }}>
-          <DataGrid rows={linhas} columns={columns}
+          <DataGrid rows={dados} columns={columns}
             pageSize={5}
             rowsPerPageOptions={[5]}
             checkboxSelection

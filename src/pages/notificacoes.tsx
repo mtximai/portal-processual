@@ -5,7 +5,7 @@ export default function Tela1() {
   return (
     <div>
 
-      <h2>Tela 1 </h2>
+      <h2>Notificações</h2>
 
       <Typography paragraph>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod

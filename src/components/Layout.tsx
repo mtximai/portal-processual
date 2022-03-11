@@ -16,8 +16,6 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import { useRouter } from 'next/router'
 import styles from '../styles/Layout.module.css'
 
@@ -75,17 +73,14 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 
-const menuItens = [
-  {text: 'Consulta Processo'    , icon: <InboxIcon />, path: '/demo/tela1' },
-  {text: 'Consulta Áreas ativas', icon: <MailIcon /> , path: '/demo/tela2' },
-  {text: '-'},
-  {text: 'Página não encontrada', icon: <InboxIcon />, path: '/' }
-]
-
 // Componente
-export default function Layout({ children }: { children: JSX.Element }) {
-
-  const [opc, setOpc] = React.useState(0)
+export default function Layout(props) {
+    
+  const children: { children: JSX.Element } = props.children
+  
+  const menuItens: {text: string, icon: any, path: string }[] = props.menuItens
+  
+  const [titulo, setTitulo] = React.useState('Toolbar')
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
@@ -99,6 +94,15 @@ export default function Layout({ children }: { children: JSX.Element }) {
   };
 
   const router = useRouter();
+
+  React.useEffect( () => {
+    const item = menuItens.filter((e,i) => e.path == router.pathname)
+
+    if (item.length >0) {
+      setTitulo(item[0].text)
+    }
+
+  }, [router.pathname])
 
 
   return (
@@ -118,7 +122,7 @@ export default function Layout({ children }: { children: JSX.Element }) {
           </IconButton>
           
           <Typography variant="h6" noWrap component="div">
-            { (opc >0) ? menuItens[opc -1].text : 'Toolbar'}
+            {titulo}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -153,7 +157,7 @@ export default function Layout({ children }: { children: JSX.Element }) {
             (e.text !== '-') ?
 
               <ListItem button
-                key={i+1}
+                key={i}
                 onClick={() => router.push(e.path) }
                 className = { e.path == router.pathname ? styles.active:''}
               >
@@ -163,7 +167,7 @@ export default function Layout({ children }: { children: JSX.Element }) {
 
                 <ListItemText primary={e.text} />
               </ListItem>
-              : <Divider />
+              : <Divider key={i} />
           )}
 
         </List>

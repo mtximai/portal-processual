@@ -1,11 +1,25 @@
 // 08/02/22
 // https://mui.com/pt/components/material-icons/
 import {useState, useEffect} from 'react'
-import { Button, Divider, TextField, Grid} from '@mui/material';
-import { Search} from '@mui/icons-material';
+import { Button, Divider, TextField, Grid, Typography} from '@mui/material';
+import { Search, SettingsSystemDaydreamOutlined} from '@mui/icons-material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import InputMask from 'react-input-mask';
 import styles from './../styles/consultaProcesso.module.css'
+import BtnProgress     from '../components/BtnProgress'
+
+// type ProtocoloType = {
+//   codProtocoloTCM: string;
+//   codProcesso: string;
+//   dtEntrada: string;
+//   conselheiro: string;
+//   areaAtual: string;
+//   assunto: string;
+//   tipoProtocolo: string;
+//   siglaUnidadeGestora: string;
+//   nomeUnidadeGestora: string;
+// }
+
 
 interface iProtocolo {
   codProtocoloTCM: string;
@@ -122,46 +136,62 @@ function f_dadosProtocolo(dados : iProtocolo) {
 }
 
 
-function fGet(url : string, fData : (p: iProtocolo) => void, fLoading: (p : boolean) => void, fError : (p : string) => void ) {
+// function fGet(url : string, fSetData : (p: iProtocolo) => void, fSetLoading: (p : boolean) => void, fSetMsg : (p : string) => void ) {
 
-  fError('')
-  fLoading(false)
+//   fSetMsg('')
+//   fSetLoading(true)
 
-  fetch(url, { method: "GET" })
-  .then(response => {
+//   fetch(url, { method: "GET" })
+//   .then(response => {
     
-    //console.log(response)
+//     //console.log(response)
 
-    // if (!response.ok) {
-    //   throw Error('Dado não disponível!')
-    // }
+//     // if (!response.ok) {
+//     //   throw Error('Dado não disponível!')
+//     // }
 
-    if (response.status != 200) {
-      throw Error('Aviso: Dado não disponível!')
-    }
+//     if (response.status == 200) {
+//       fSetMsg('Processamento concluído!')
+//     } else {
+//       throw Error('Aviso: Erro de comunicação com o servidor!')
+//     }
 
-    return response.json()
-  })
-  .then (data => {
+//     return response.json()
+//   })
+//   .then (data => {
 
-    //console.log('completado', data)
+//     //console.log('completado', data)
 
-    fData(data)
-    fLoading(false)
-    fError('')
+//     fSetData(data)
+//     fSetLoading(false)
+//     fSetMsg('')
 
-  }).catch(err => {
+//   }).catch(err => {
 
-    let msg = err.message
+//     let msg = err.message
 
-    if (!err.message.startsWith('Aviso:')) {
-      msg = `Erro de comunicação: ${err.message}`
-    }
+//     if (!err.message.startsWith('Aviso:')) {
+//       msg = `Erro de comunicação: ${err.message}`
+//       fSetData(initDados)
+//     }
     
-    fError(msg)
-    fLoading(false)
+//     fSetMsg(msg)
+//     fSetLoading(false)
+//   })
+// }
 
-    //console.log(msg)
+
+function obterDados(pUrl: string) {
+
+  return new Promise( (resolve, reject) => {
+
+    fetch(pUrl)
+      .then((data) => data.json())
+      .then((data) => {
+        resolve(data)
+      })
+      .catch(e => reject(e))
+
   })
 }
 
@@ -174,32 +204,41 @@ export default function ConsultaProcesso() {
   const [codigo, setCodigo] = useState('013225/2018')
 
   const [dados, setDados] = useState(initDados)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('inicio...')
-
+  const [loading, setLoading] = useState(false)
+  const [achou, setAchou] = useState(false)
   const [msg, setMsg] = useState('')
  
   
-  function obterDados(cod : string) {
-    fGet(`http://localhost:2446/api/portaljurisdicionado/protocolo?cod=${cod}`, setDados, setIsLoading, setError)
+  function clickPesquisar(cod : string) {
+
+    setLoading(true)
+    setAchou(false)
+    setMsg('')
+
+    const mUrl = `http://localhost:2446/api/portaljurisdicionado/protocolo?cod=${cod}`
+
+    const d = obterDados(mUrl)
+              .then((r: iProtocolo) => {
+
+                setDados(r)
+                setLoading(false)
+                setAchou(true)
+
+                setMsg(`Processamento concluído!`)
+              })
+              .catch( (e) => {
+
+                setDados(initDados)
+                setLoading(false)
+                setAchou(false)
+
+                setMsg('Erro: falha na obtenção dos dados!')
+              })
   }
   
   function limpar() {
     setCodigo('')
   }
-
-  function f_exibirDados() {
-    return !error ? f_dadosProtocolo(dados) : null
-
-  }
-
-  useEffect(() => {
-    if (error)
-      setMsg(error)
-    else
-      setMsg('')
-
-  }, [error])
 
 
   return (
@@ -212,7 +251,7 @@ export default function ConsultaProcesso() {
       <Grid item >
         <InputMask mask="999999/9999" className={styles.texto}
           name='mskCodigo'
-          inputRef={input => input && input.focus() }
+          // inputRef={input => input && input.focus() }
           alwaysShowMask={true}
           value={codigo}
           onChange={ e => setCodigo(e.target.value) }
@@ -220,12 +259,7 @@ export default function ConsultaProcesso() {
       </Grid>
 
       <Grid item>
-        <Button color="primary" variant="contained" size="small"
-          startIcon={ <Search fontSize="large" /> }
-          onClick={() => { obterDados(codigo) }}
-        >
-          { isLoading ? "Aguarde...":"Pesquisar"}
-        </Button>
+        <BtnProgress loading={ loading } onClick={ () => { clickPesquisar(codigo) } } />
       </Grid>
 
       <Grid item>
@@ -237,16 +271,16 @@ export default function ConsultaProcesso() {
         </Button>
       </Grid>
 
-      <Grid item xs={12}>
-        <Divider />
-      </Grid>
-
       <Grid item>
-        <h2>{msg}</h2>
+        <Typography sx={{ fontWeight: 'bold' }}>{msg}</Typography>
       </Grid>
 
-      { f_exibirDados() }
-        
+      <Grid item xs={12}>
+        <Divider sx={{ marginTop:'10px' }} />
+      </Grid>
+
+      { achou ? f_dadosProtocolo(dados) : null }
+              
     </Grid>
   )
 }
