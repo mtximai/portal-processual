@@ -3,10 +3,10 @@
 //
 // > yarn add @mui/x-data-grid
 //
-
+import { getService } from '../lib/libBase1'
 import { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-
+import BtnProgress      from '../components/BtnProgress'
 import {
   Button,
   Card, CardHeader, CardContent,
@@ -14,28 +14,6 @@ import {
   TextField,
   Box, Grid, Typography
 } from '@mui/material';
-
-import CircularProgress from '@mui/material/CircularProgress';
-import BtnProgress     from '../components/BtnProgress'
-
-
-function obterDados() {
-
-  return new Promise( (resolve, reject) => {
-
-    fetch("http://localhost:2446/api/portaljurisdicionado/AreaAtual")
-      .then((data) => data.json())
-      .then((data) => {
-        resolve(data)
-      })
-      .catch(e => reject(e))
-
-  })
-
-}
-
-
-const progress = <CircularProgress color="secondary" size={20} />
 
 
 // Componente
@@ -58,16 +36,20 @@ export default function CadastroArea() {
     setLoading(true)
     setMsg('')
 
-    const d = obterDados()
-              .then((r: object[]) => {
-                setDados(r)
+    const d = getService("http://localhost:2446/api/portaljurisdicionado/AreaAtual")
+              .then( (r: object[]) => {
+
+                let dados = (r == null ? [] : r)
+
+                setDados(dados)
                 setLoading(false)
-                setMsg(`Processamento concluído: ${r.length} registro(s) encotrados!`)
+                setMsg(`Processamento concluído: ${dados.length} registro(s) encotrados!`)
               })
               .catch( (e) => {
                 setDados([])
                 setLoading(false)
                 setMsg('Erro: falha na obtenção dos dados!')
+                console.log(e)
               })
   }
 

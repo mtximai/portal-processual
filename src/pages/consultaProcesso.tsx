@@ -1,5 +1,8 @@
 // 08/02/22
 // https://mui.com/pt/components/material-icons/
+
+import { getService } from '../lib/libBase1'
+
 import {useState, useEffect} from 'react'
 import { Button, Divider, TextField, Grid, Typography} from '@mui/material';
 import { Search, SettingsSystemDaydreamOutlined} from '@mui/icons-material';
@@ -8,20 +11,7 @@ import InputMask from 'react-input-mask';
 import styles from './../styles/consultaProcesso.module.css'
 import BtnProgress     from '../components/BtnProgress'
 
-// type ProtocoloType = {
-//   codProtocoloTCM: string;
-//   codProcesso: string;
-//   dtEntrada: string;
-//   conselheiro: string;
-//   areaAtual: string;
-//   assunto: string;
-//   tipoProtocolo: string;
-//   siglaUnidadeGestora: string;
-//   nomeUnidadeGestora: string;
-// }
-
-
-interface iProtocolo {
+type ProtocoloType = {
   codProtocoloTCM: string;
   codProcesso: string;
   dtEntrada: string;
@@ -33,7 +23,7 @@ interface iProtocolo {
   nomeUnidadeGestora: string;
 }
 
-const initDados : iProtocolo = {
+const iniDados : ProtocoloType = {
   codProtocoloTCM: "           ",
   codProcesso: "",
   dtEntrada: "",
@@ -45,17 +35,22 @@ const initDados : iProtocolo = {
   nomeUnidadeGestora: ""
 }
 
-function f_dt(dt: string) {
-  // Data no formato 'yyyy-mm-dd hh:mm:ss'
 
-  //let r = new Date(dt.substring(0,10))
-  
-  //return r.toLocaleDateString('pt-BR', {timeZone: 'UTC'});
-  return dt
+//Data no formato 'yyyy-mm-dd hh:mm:ss'
+function f_dt(dt: string) {
+
+  let resp = ''
+
+  if (dt != null) {
+    let r = new Date(dt.substring(0,10))
+    resp = r.toLocaleDateString('pt-BR', {timeZone: 'UTC'});
+  }
+
+  return resp
 }
 
 
-function f_dadosProtocolo(dados : iProtocolo) {
+function f_dadosProtocolo(dados : ProtocoloType) {
   return (
     <>
     <Grid item xs={12} margin={0}>
@@ -66,7 +61,7 @@ function f_dadosProtocolo(dados : iProtocolo) {
     </Grid>
 
     <Grid container spacing={2} margin={0}>
-      <Grid item md={1}>
+      <Grid item md={2}>
         <TextField
           id="idProcesso"
           label="Processo"
@@ -110,7 +105,7 @@ function f_dadosProtocolo(dados : iProtocolo) {
 
     <Grid container spacing={2} margin={0}>
 
-      <Grid item md={1} />
+      <Grid item md={2} />
 
       <Grid item md={3}>
         <TextField
@@ -135,67 +130,6 @@ function f_dadosProtocolo(dados : iProtocolo) {
   )
 }
 
-
-// function fGet(url : string, fSetData : (p: iProtocolo) => void, fSetLoading: (p : boolean) => void, fSetMsg : (p : string) => void ) {
-
-//   fSetMsg('')
-//   fSetLoading(true)
-
-//   fetch(url, { method: "GET" })
-//   .then(response => {
-    
-//     //console.log(response)
-
-//     // if (!response.ok) {
-//     //   throw Error('Dado não disponível!')
-//     // }
-
-//     if (response.status == 200) {
-//       fSetMsg('Processamento concluído!')
-//     } else {
-//       throw Error('Aviso: Erro de comunicação com o servidor!')
-//     }
-
-//     return response.json()
-//   })
-//   .then (data => {
-
-//     //console.log('completado', data)
-
-//     fSetData(data)
-//     fSetLoading(false)
-//     fSetMsg('')
-
-//   }).catch(err => {
-
-//     let msg = err.message
-
-//     if (!err.message.startsWith('Aviso:')) {
-//       msg = `Erro de comunicação: ${err.message}`
-//       fSetData(initDados)
-//     }
-    
-//     fSetMsg(msg)
-//     fSetLoading(false)
-//   })
-// }
-
-
-function obterDados(pUrl: string) {
-
-  return new Promise( (resolve, reject) => {
-
-    fetch(pUrl)
-      .then((data) => data.json())
-      .then((data) => {
-        resolve(data)
-      })
-      .catch(e => reject(e))
-
-  })
-}
-
-
 //const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
 
 // Componente
@@ -203,7 +137,7 @@ export default function ConsultaProcesso() {
 
   const [codigo, setCodigo] = useState('013225/2018')
 
-  const [dados, setDados] = useState(initDados)
+  const [dados, setDados] = useState(iniDados)
   const [loading, setLoading] = useState(false)
   const [achou, setAchou] = useState(false)
   const [msg, setMsg] = useState('')
@@ -217,21 +151,23 @@ export default function ConsultaProcesso() {
 
     const mUrl = `http://localhost:2446/api/portaljurisdicionado/protocolo?cod=${cod}`
 
-    const d = obterDados(mUrl)
-              .then((r: iProtocolo) => {
-
-                setDados(r)
+    const d = getService(mUrl)
+              .then((r: ProtocoloType) => {
+                
+                if (r != null) {
+                  setDados(r)
+                  setAchou(true)
+                }
+                
                 setLoading(false)
-                setAchou(true)
-
-                setMsg(`Processamento concluído!`)
+                setMsg(`Pesquisa concluída!`)
               })
               .catch( (e) => {
 
-                setDados(initDados)
-                setLoading(false)
+                setDados(iniDados)
                 setAchou(false)
-
+                
+                setLoading(false)
                 setMsg('Erro: falha na obtenção dos dados!')
               })
   }
