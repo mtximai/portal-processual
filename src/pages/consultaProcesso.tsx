@@ -130,7 +130,7 @@ function f_dadosProtocolo(dados : ProtocoloType) {
   )
 }
 
-//const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
+const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
 
 // Componente
 export default function ConsultaProcesso() {
@@ -149,7 +149,7 @@ export default function ConsultaProcesso() {
     setAchou(false)
     setMsg('')
 
-    const mUrl = `http://localhost:2446/api/portaljurisdicionado/protocolo?cod=${cod}`
+    const mUrl = `${mEtcm}/api/portaljurisdicionado/protocolo?cod=${cod}`
 
     const d = getService(mUrl)
               .then((r: ProtocoloType) => {

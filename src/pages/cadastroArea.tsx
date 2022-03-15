@@ -15,6 +15,8 @@ import {
   Box, Grid, Typography
 } from '@mui/material';
 
+const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
+
 
 // Componente
 export default function CadastroArea() {
@@ -36,7 +38,7 @@ export default function CadastroArea() {
     setLoading(true)
     setMsg('')
 
-    const d = getService("http://localhost:2446/api/portaljurisdicionado/AreaAtual")
+    const d = getService(`${mEtcm}/api/portaljurisdicionado/AreaAtual`)
               .then( (r: object[]) => {
 
                 let dados = (r == null ? [] : r)
