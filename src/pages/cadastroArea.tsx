@@ -6,7 +6,7 @@
 import { getService } from '../lib/libBase1'
 import { useEffect, useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import BtnProgress      from '../components/BtnProgress'
+import BtnSpinner      from '../components/BtnSpinner'
 import {
   Button,
   Card, CardHeader, CardContent,
@@ -15,15 +15,27 @@ import {
   Box, Grid, Typography
 } from '@mui/material';
 
-const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
+import { GetServerSideProps } from 'next'
+import { useRouter } from 'next/router'
+
+interface AreaProps {
+  data: object[]
+}
 
 
 // Componente
-export default function CadastroArea() {
-
+export default function CadastroArea(props) {
+  
   const [dados, setDados] = useState([])
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState('');
+  
+  const router = useRouter();
+  const data = props.data
+
+  useEffect(() => {
+    setDados(data)
+  }, [data])
 
   
   // Colunas da GRID
@@ -38,21 +50,10 @@ export default function CadastroArea() {
     setLoading(true)
     setMsg('')
 
-    const d = getService(`${mEtcm}/api/portaljurisdicionado/AreaAtual`)
-              .then( (r: object[]) => {
+    router.push('/cadastroArea')
 
-                let dados = (r == null ? [] : r)
+    setLoading(false)
 
-                setDados(dados)
-                setLoading(false)
-                setMsg(`Processamento concluído: ${dados.length} registro(s) encotrados!`)
-              })
-              .catch( (e) => {
-                setDados([])
-                setLoading(false)
-                setMsg('Erro: falha na obtenção dos dados!')
-                console.log(e)
-              })
   }
 
   return (
@@ -63,7 +64,7 @@ export default function CadastroArea() {
 
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
-          <BtnProgress loading={ loading } onClick={ clickPesquisar } />
+          <BtnSpinner loading={ loading } onClick={ clickPesquisar } text='Atualizar' />
 
           <Typography sx={{ fontWeight: 'bold', marginLeft:'10px', color: `${ msg.startsWith('Erro:') ? 'red':'blue' }` }}>{msg}</Typography>
 
@@ -83,5 +84,23 @@ export default function CadastroArea() {
       </CardContent>
     </Card>
   );
+}
 
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+
+  const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
+  
+  const mUrl  = `${mEtcm}/api/portaljurisdicionado/AreaAtual`
+
+  // Busca dados
+  const response = await fetch(mUrl)
+  const data = await response.json()
+
+  //console.log('server:', context.req, data)
+  //console.log('server: executando...', context.query.a)
+
+  return {
+    props: {data}, // will be passed to the page component as props
+  }
 }

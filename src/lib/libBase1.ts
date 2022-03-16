@@ -20,3 +20,22 @@ export async function getService(url: string) {
       .catch(e => reject(e))
   })
 }
+
+
+/*
+const d = getService(`${mEtcm}/api/portaljurisdicionado/AreaAtual`)
+          .then( (r: object[]) => {
+
+            let dados = (r == null ? [] : r)
+
+            setDados(dados)
+            setLoading(false)
+            setMsg(`Processamento concluído: ${dados.length} registro(s) encotrados!`)
+          })
+          .catch( (e) => {
+            setDados([])
+            setLoading(false)
+            setMsg('Erro: falha na obtenção dos dados!')
+            console.log(e)
+          })
+*/

@@ -105,6 +105,15 @@ export default function Layout(props) {
   }, [router.pathname])
 
 
+  // const v = React.useRef('')
+  // v.current = `pathname: ${router.pathname} - asPath: ${router.asPath}`
+
+  // function param1(a: string, b:string) : boolean {
+  //   console.log('param =>', a, b, a==b)
+  //   return a==b
+  // }
+
+
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -141,7 +150,7 @@ export default function Layout(props) {
         open={open}
       >
         <DrawerHeader>
-          <h3>Módulo Processual</h3>
+          <h3>Módulo Processual v1</h3>
 
           <IconButton onClick={handleDrawerClose}>
             <ChevronLeftIcon />

@@ -2,14 +2,18 @@
 // https://mui.com/pt/components/material-icons/
 
 import { getService } from '../lib/libBase1'
-
+import React from 'react'
 import {useState, useEffect} from 'react'
 import { Button, Divider, TextField, Grid, Typography} from '@mui/material';
 import { Search, SettingsSystemDaydreamOutlined} from '@mui/icons-material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import InputMask from 'react-input-mask';
 import styles from './../styles/consultaProcesso.module.css'
-import BtnProgress     from '../components/BtnProgress'
+import BtnSpinner from '../components/BtnSpinner'
+import { GetServerSideProps } from 'next'
+import { useRouter } from 'next/router'
+import Router from 'next/router'
+
 
 type ProtocoloType = {
   codProtocoloTCM: string;
@@ -36,7 +40,7 @@ const iniDados : ProtocoloType = {
 }
 
 
-//Data no formato 'yyyy-mm-dd hh:mm:ss'
+// dt no formato 'yyyy-mm-dd hh:mm:ss'
 function f_dt(dt: string) {
 
   let resp = ''
@@ -130,47 +134,82 @@ function f_dadosProtocolo(dados : ProtocoloType) {
   )
 }
 
-const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
 
 // Componente
-export default function ConsultaProcesso() {
+export default function ConsultaProcesso(props) {
 
+  const d = props.data
+
+  console.log('inicio...',d)
+
+
+  
+  const router = useRouter();
+  
   const [codigo, setCodigo] = useState('013225/2018')
-
+  
   const [dados, setDados] = useState(iniDados)
+
   const [loading, setLoading] = useState(false)
   const [achou, setAchou] = useState(false)
   const [msg, setMsg] = useState('')
- 
+
+  const [pesquisou, setPesquisou] = useState(false)
   
+
+  // Progress para getServerSideProps()
+  React.useEffect(() => {
+
+    const start = () => {
+      setLoading(true);
+    };
+
+    const end = () => {
+
+      console.log(d)
+
+      setLoading(false);
+
+
+    };
+
+    Router.events.on("routeChangeStart", start);
+    Router.events.on("routeChangeComplete", end);
+    Router.events.on("routeChangeError", end);
+
+    return () => {
+      Router.events.off("routeChangeStart", start);
+      Router.events.off("routeChangeComplete", end);
+      Router.events.off("routeChangeError", end);
+    };
+  }, []);
+
+
+  useEffect( () => {
+    if (pesquisou) {
+      if (d == null) {
+        setMsg('Não cadastrado!')
+      } else {
+        setDados(d)
+        setMsg('Pesquisa concluída!')
+      }
+  
+      setAchou(d != null)
+    }
+
+  }, [d])
+  
+
   function clickPesquisar(cod : string) {
+    setPesquisou(true)
 
     setLoading(true)
     setAchou(false)
     setMsg('')
 
-    const mUrl = `${mEtcm}/api/portaljurisdicionado/protocolo?cod=${cod}`
-
-    const d = getService(mUrl)
-              .then((r: ProtocoloType) => {
-                
-                if (r != null) {
-                  setDados(r)
-                  setAchou(true)
-                }
-                
-                setLoading(false)
-                setMsg(`Pesquisa concluída!`)
-              })
-              .catch( (e) => {
-
-                setDados(iniDados)
-                setAchou(false)
-                
-                setLoading(false)
-                setMsg('Erro: falha na obtenção dos dados!')
-              })
+    router.push(`/consultaProcesso?cod=${cod}`)
   }
+
   
   function limpar() {
     setCodigo('')
@@ -195,7 +234,7 @@ export default function ConsultaProcesso() {
       </Grid>
 
       <Grid item>
-        <BtnProgress loading={ loading } onClick={ () => { clickPesquisar(codigo) } } />
+        <BtnSpinner loading={ loading } onClick={ () => { clickPesquisar(codigo) } } />
       </Grid>
 
       <Grid item>
@@ -219,4 +258,30 @@ export default function ConsultaProcesso() {
               
     </Grid>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+
+  const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
+  
+  let cod = context.query.cod
+
+  let data = null
+
+  if (cod) {
+    const mUrl = `${mEtcm}/api/portaljurisdicionado/protocolo?cod=${cod}`
+    
+    // Busca dados
+    const resp = await fetch(mUrl)
+
+    if (resp.status == 200) {
+      data = await resp.json()
+    }
+  }
+
+  console.log(data, Date())
+
+  return {
+    props: {data} // will be passed to the page component as props
+  }
 }
