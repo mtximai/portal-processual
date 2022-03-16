@@ -14,6 +14,7 @@
 
 > npm i @mui/x-data-grid
 
+
 Gerar container: (14/03/22)
 
   > docker image build -t mtximai/portal-processual:1.0 .
@@ -24,5 +25,14 @@ Gerar container: (14/03/22)
   > docker login --username=mtximai
   > docker push mtximai/portal-processual:1.0
 
-  > docker image pull mtximai/portal-processual:1.0
+Atualizar kubernetes
+
+  > cd f:\zProjetos\kubernetes\portal-processual
+
+  > kubectl delete -f .\portal-deploy.yml
+  
+  > kubectl apply -f .\portal-deploy.yml
+
+
+  imagePullPolicy: Always|IfNotPresent
 
