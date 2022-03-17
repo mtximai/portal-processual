@@ -16,7 +16,7 @@ const menuItens = [
 function MyApp({ Component, pageProps }) {
 
   return (
-    <Layout menuItens={menuItens} >
+    <Layout menuItens={menuItens} tituloDrawer='Portal Processual' >
       <Component {...pageProps} />
     </Layout>
   )

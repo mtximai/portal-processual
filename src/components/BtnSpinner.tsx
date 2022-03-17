@@ -7,7 +7,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 type myProps = {
   onClick: React.MouseEventHandler
-  loading: boolean
+  loading?: boolean
   text?: string
   icon?: React.ReactNode
 }
@@ -21,16 +21,21 @@ export default function BtnProgress(props: myProps) {
   // Default:
   const mText = (text ?? 'Pesquisar')
   const mIcon = (icon ?? <Search />)
+  const mLoading = (loading ?? false)
 
   return (
     <Box sx={{ display: 'flex', alignItems: 'center' }}>
 
-      <Button color="primary" variant="contained" size="small"
-        startIcon={loading ? progress : mIcon}
-        disabled={loading}
+      <Button
+        color="primary"
+        variant="contained"
+        size="small"
+        startIcon={mLoading ? progress : mIcon}
+        disabled={mLoading}
         onClick={ onClick }
+        sx={{textTransform: 'none'}}
       >
-        { loading ? 'Aguarde...' : mText }
+        { mLoading ? 'Aguarde...' : mText }
       </Button>
 
     </Box>

@@ -1,8 +1,18 @@
 import Typography from "@mui/material/Typography";
+import BtnSpinner from "../components/BtnSpinner";
+import { iContext, useLayoutUpdate } from "../components/Layout";
+import MailIcon from '@mui/icons-material/Mail';
 
 export default function Tela2() {
+
+  const ctxLayout = useLayoutUpdate() as iContext
+
+  function f_onClick() {
+    ctxLayout.f_qtCorreioUpdate(ctxLayout.qtCorreio + 1)
+  }
   
   return (
+    
     <div>
 
       <h2>Mensagens</h2>
@@ -35,6 +45,13 @@ export default function Tela2() {
         consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem donec massa
         sapien faucibus et molestie ac.
       </Typography>
+
+      <BtnSpinner
+        text='Mensagens'
+        icon={<MailIcon />}
+        onClick={f_onClick}
+      />
+
     </div>
   )
 }

@@ -1,9 +1,23 @@
+import { NotificationsNoneOutlined } from "@mui/icons-material";
+import { Box, Button } from "@mui/material";
 import Typography from "@mui/material/Typography";
+import BtnSpinner from "../components/BtnSpinner";
+import { useLayoutUpdate, iContext } from '../components/Layout';
 
 export default function Tela1() {
+
+  const ctxLayout = useLayoutUpdate() as iContext
+
+  function f_onClick() {
+    ctxLayout.f_qtNotificacaoUpdate(ctxLayout.qtNotificacao + 1)
+  }
   
   return (
-    <div>
+    <Box
+      display='flex'
+      flexDirection='column'
+      
+    >
 
       <h2>Notificações</h2>
 
@@ -22,6 +36,12 @@ export default function Tela1() {
         sapien faucibus et molestie ac.
       </Typography>
 
-    </div>
+      <BtnSpinner
+        text='Notificações'
+        icon={<NotificationsNoneOutlined />}
+        onClick={f_onClick}
+      />
+
+    </Box>
   )
 }

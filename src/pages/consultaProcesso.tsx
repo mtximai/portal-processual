@@ -139,10 +139,7 @@ function f_dadosProtocolo(dados : ProtocoloType) {
 export default function ConsultaProcesso(props) {
 
   const d = props.data
-
-  console.log('inicio...',d)
-
-
+  //console.log('inicio...',d)
   
   const router = useRouter();
   
@@ -165,12 +162,7 @@ export default function ConsultaProcesso(props) {
     };
 
     const end = () => {
-
-      console.log(d)
-
       setLoading(false);
-
-
     };
 
     Router.events.on("routeChangeStart", start);
@@ -186,6 +178,7 @@ export default function ConsultaProcesso(props) {
 
 
   useEffect( () => {
+    
     if (pesquisou) {
       if (d == null) {
         setMsg('Não cadastrado!')
@@ -238,9 +231,13 @@ export default function ConsultaProcesso(props) {
       </Grid>
 
       <Grid item>
-        <Button variant="contained" color="primary" size="small"
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
           startIcon={ <HighlightOffIcon fontSize="large" /> }
           onClick={() => { limpar() }}
+          sx={{textTransform: 'none'}}
         >
           Limpar
         </Button>
