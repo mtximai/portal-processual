@@ -1,0 +1,25 @@
+.principal {
+  display: flex;
+  flex-direction: column;
+  background-color: #aaa;
+  padding: 10px;
+  height: 100vh;
+}
+
+.flex {
+  display: flex;
+}
+
+.teste1 {
+  background-color:rgb(160, 140, 114);
+  height: 'calc(100vh - 4rem)';
+  overflow: scroll;
+  padding: 5px;
+}
+
+.teste2 {
+  background-color: lightslategray;
+  height: 'calc(100vh - 4rem)';
+  overflow: scroll;
+  padding: 5px;
+}

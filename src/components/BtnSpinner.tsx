@@ -14,7 +14,7 @@ type myProps = {
 
 const progress = <CircularProgress color="secondary" size={20} />
 
-export default function BtnProgress(props: myProps) {
+export default function BtnSpinner(props: myProps) {
   
   const { onClick, loading, text, icon } = props
   

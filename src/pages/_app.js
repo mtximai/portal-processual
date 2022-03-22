@@ -8,9 +8,10 @@ const menuItens = [
   { text: 'Home', icon: <HomeOutlined />, path: '/' },
   { text: 'Consulta Processo', icon: <ArticleOutlined />, path: '/consultaProcesso' },
   { text: 'Consulta Áreas ativas', icon: <ArticleOutlined />, path: '/cadastroArea' },
+  { text: 'Visualizador de Atos', icon: <ArticleOutlined />, path: '/visualizador' },
   { text: '-' },
-  { text: 'Notificações', icon: <NotificationsNoneOutlined />, path: '/notificacoes' },
-  { text: 'Mensagens', icon: <MailIcon />, path: '/mensagens' },
+  { text: 'Notificações', icon: <NotificationsNoneOutlined />, path: '/notificacao' },
+  { text: 'Correio', icon: <MailIcon />, path: '/correio' },
 ]
 
 function MyApp({ Component, pageProps }) {

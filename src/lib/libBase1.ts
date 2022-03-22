@@ -5,13 +5,11 @@
 // 1) Retorna uma promise
 // 2) Se der resposta diferente de 200 retorna null
 // 204 No content
-export async function getService(url: string) {
+export async function getServicePromise(url: string) {
 
   return new Promise( (resolve, reject) => {
     fetch(url)
       .then((response) => {
-        //console.log(response.status)
-
         return (response.status == 200) ? response.json() : null
       })
       .then( (data) => {
@@ -39,3 +37,15 @@ const d = getService(`${mEtcm}/api/portaljurisdicionado/AreaAtual`)
             console.log(e)
           })
 */
+
+export async function getServiceCallback(url: string, cbSucesso: any, cbErro: any) {
+
+  fetch(url)
+    .then((response) => {
+      return (response.status == 200) ? response.json() : null
+    })
+    .then( (data) => {
+      cbSucesso(data)
+    })
+    .catch(e => cbErro(e))
+}

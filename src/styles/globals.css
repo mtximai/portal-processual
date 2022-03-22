@@ -14,3 +14,22 @@ a {
 * {
   box-sizing: border-box;
 }
+
+
+/* Utilizado pelo react-split */
+.gutter {
+  background-color: #eee;
+
+  background-repeat: no-repeat;
+  background-position: 50%;
+}
+
+.gutter.gutter-horizontal {
+  background-image: url('/img/vertical.png');
+  cursor: col-resize;
+}
+
+.gutter.gutter-vertical {
+  background-image: url('/img/horizontal.png');
+  cursor: row-resize;
+}

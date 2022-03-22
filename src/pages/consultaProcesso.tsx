@@ -1,7 +1,6 @@
 // 08/02/22
 // https://mui.com/pt/components/material-icons/
 
-import { getService } from '../lib/libBase1'
 import React from 'react'
 import {useState, useEffect} from 'react'
 import { Button, Divider, TextField, Grid, Typography} from '@mui/material';
@@ -135,10 +134,15 @@ function f_dadosProtocolo(dados : ProtocoloType) {
 }
 
 
-// Componente
-export default function ConsultaProcesso(props) {
+interface iProps {
+  data: ProtocoloType
+}
 
-  const d = props.data
+// Componente
+export default function ConsultaProcesso<iProps>({ data : d}) {
+
+  //const d = props.data as ProtocoloType
+  
   //console.log('inicio...',d)
   
   const router = useRouter();
@@ -190,7 +194,7 @@ export default function ConsultaProcesso(props) {
       setAchou(d != null)
     }
 
-  }, [d])
+  }, [d, pesquisou])
   
 
   function clickPesquisar(cod : string) {
@@ -237,7 +241,7 @@ export default function ConsultaProcesso(props) {
           size="small"
           startIcon={ <HighlightOffIcon fontSize="large" /> }
           onClick={() => { limpar() }}
-          sx={{textTransform: 'none'}}
+          style={{textTransform: 'none'}}
         >
           Limpar
         </Button>
@@ -263,7 +267,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   
   let cod = context.query.cod
 
-  let data = null
+  let data: ProtocoloType = null
 
   if (cod) {
     const mUrl = `${mEtcm}/api/portaljurisdicionado/protocolo?cod=${cod}`

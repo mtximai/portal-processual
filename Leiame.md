@@ -29,10 +29,20 @@ Atualizar kubernetes
 
   > cd f:\zProjetos\kubernetes\portal-processual
 
+  Verifique se o context aponta para sisaud-d
+
   > kubectl delete -f .\portal-deploy.yml
   
   > kubectl apply -f .\portal-deploy.yml
 
 
   imagePullPolicy: Always|IfNotPresent
+
+
+> npm i react-split
+  # https://github.com/nathancahill/split
+
+
+Para instalar o Treeview (em desenvolvimento)
+> npm i @mui/lab
 

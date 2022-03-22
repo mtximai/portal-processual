@@ -18,7 +18,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import styles from '../styles/Layout.module.css'
 import { useRouter } from 'next/router'
-import MyToolbar, { useCorreioUpdate } from './MyToolbar'
+import MyToolbar from './MyToolbar'
 
 
 const drawerWidth = 300;
@@ -77,18 +77,9 @@ const DrawerHeader = styled('div')( ({ theme }) => (
   
 export interface iContext {
   f_drawerTitleUpdate(title: string): void
-  f_qtCorreioUpdate(qtCorreio: number): void
-  f_qtNotificacaoUpdate(qtNotificacao: number): void
-  qtCorreio: number
-  qtNotificacao: number
+  callbackCorreio: any
+  callbackNotificacao: any
 }
-
-const LayoutContext = React.createContext()
-
-export function useLayoutUpdate() {
-  return useContext(LayoutContext)
-}
-
 interface iProps {
   children: { children: JSX.Element }
   menuItens: {text: string, icon: any, path: string }[]
@@ -96,23 +87,28 @@ interface iProps {
   titulo: string
 }
 
+const LayoutContext = React.createContext<iContext>(null)
+
+export function useLayoutUpdate() {
+  return useContext(LayoutContext)
+}
 
 // Component
 export default function Layout(props: iProps) {
 
-  const [qtCorreio, setQtCorreio] = useState(2)
-  const [qtNotificacao, setQtNotificacao] = useState(3)
+  const [qtCorreio, setQtCorreio] = useState<number>(2)
+  const [qtNotificacao, setQtNotificacao] = useState<number>(3)
 
-  const [tituloDrawer, setTituloDrawer] = useState(props.tituloDrawer ?? 'Título Drawer')
+  const [tituloDrawer, setTituloDrawer] = useState<string>(props.tituloDrawer ?? 'Título Drawer')
 
   const children: { children: JSX.Element } = props.children
   
   const menuItens: {text: string, icon: any, path: string }[] = props.menuItens
 
-  const [titulo, setTitulo] = useState('Toolbar')
+  const [titulo, setTitulo] = useState<string>('Toolbar')
 
   const theme = useTheme();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState<boolean>(true);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -147,10 +143,8 @@ export default function Layout(props: iProps) {
 
   const mValue : iContext = {
     f_drawerTitleUpdate,
-    f_qtCorreioUpdate,
-    f_qtNotificacaoUpdate,
-    qtCorreio,
-    qtNotificacao
+    callbackCorreio: (func: (a:number, b: (p: number) => void) => void) => func(qtCorreio, f_qtCorreioUpdate),
+    callbackNotificacao: (func: (a:number, b: (p: number) => void) => void) => func(qtNotificacao, f_qtNotificacaoUpdate)
   }
 
   return (
