@@ -67,3 +67,11 @@ pspdfkit
   > cp -R ./node_modules/pspdfkit/dist/pspdfkit-lib public/pspdfkit-lib
 
 
+
+https://pdfobject.com  (open-source)
+
+https://www.npmjs.com/package/react-pdfobject
+
+> npm i react-pdfobject
+
+

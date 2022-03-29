@@ -1,0 +1,8 @@
+/node_modules
+/.next
+package-lock.json
+yarn.lock
+.gitignore
+Dockerfile
+docker-compose.yml
+realm-export.json

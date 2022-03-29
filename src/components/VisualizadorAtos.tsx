@@ -199,7 +199,7 @@ export default function VisualizadorAtos<iProps>({ codProtocolo, atos }) {
                     label={`${p.id} - ${p.nm_peca}`}
                     key={p.id+1}
                     onClick={() => f_itemClick(p.id)}
-                    sx={{}}
+                    sx={{fontSize:' 8px' }}
                   />
                 )}
               </TreeItem>

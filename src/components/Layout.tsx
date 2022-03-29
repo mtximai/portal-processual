@@ -147,6 +147,12 @@ export default function Layout(props: iProps) {
     callbackNotificacao: (func: (a:number, b: (p: number) => void) => void) => func(qtNotificacao, f_qtNotificacaoUpdate)
   }
 
+
+  function f_teste(e){
+    console.log(e, router.pathname, e.path == router.pathname, styles.active )
+    return e.path == router.pathname ? styles.active:''
+  }
+
   return (
     <LayoutContext.Provider value={mValue}>
 
@@ -209,7 +215,7 @@ export default function Layout(props: iProps) {
                 <ListItem button
                   key={i}
                   onClick={() => router.push(e.path) }
-                  className = { e.path == router.pathname ? styles.active:''}
+                  className = { f_teste(e) }
                 >
                   <ListItemIcon>
                     {e.icon}
