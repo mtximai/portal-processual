@@ -1,8 +1,8 @@
 10/03/22
 
-> npm i
+> npm i   # instala as dependências
 
-. Criado o arquivo /tsconfig.js
+. Criado o arquivo /tsconfig.js (vazio)
 
 > npm install --save-dev @types/react @types/node
 
@@ -35,6 +35,7 @@ Atualizar kubernetes
   
   > kubectl apply -f .\portal-deploy.yml
 
+  > kubectl get pod -n mauro-teste --watch
 
   imagePullPolicy: Always|IfNotPresent
 
@@ -44,5 +45,25 @@ Atualizar kubernetes
 
 
 Para instalar o Treeview (em desenvolvimento)
-> npm i @mui/lab
+
+  > npm i @mui/lab
+
+Para rodar a API no server-side:
+  
+  https://github.com/node-fetch/node-fetch
+
+  > npm i node-fetch
+
+PDF.js (28/03/22)
+  
+  https://mozilla.github.io/pdf.js/examples/
+
+  > npm install pdfjs-dist
+  > copy ./node_modules/pdfjs-dist/build/pdf.worker.min.js ./public/
+
+pspdfkit
+
+  > npm install pspdfkit
+  > cp -R ./node_modules/pspdfkit/dist/pspdfkit-lib public/pspdfkit-lib
+
 

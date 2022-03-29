@@ -1,9 +1,8 @@
-// 08/02/22
-// https://mui.com/pt/components/material-icons/
+// Mauro - 08/02/22
 
-import React from 'react'
+import * as React from 'react';
 import {useState, useEffect} from 'react'
-import { Button, Divider, TextField, Grid, Typography} from '@mui/material';
+import { Divider, TextField, Grid, Typography} from '@mui/material';
 import { Search, SettingsSystemDaydreamOutlined} from '@mui/icons-material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import InputMask from 'react-input-mask';
@@ -12,6 +11,9 @@ import BtnSpinner from '../components/BtnSpinner'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import Router from 'next/router'
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Button from '@mui/material/Button';
 
 
 type ProtocoloType = {
@@ -53,7 +55,8 @@ function f_dt(dt: string) {
 }
 
 
-function f_dadosProtocolo(dados : ProtocoloType) {
+function f_protocolo(dados : ProtocoloType) {
+
   return (
     <>
     <Grid item xs={12} margin={0}>
@@ -141,10 +144,6 @@ interface iProps {
 // Componente
 export default function ConsultaProcesso<iProps>({ data : d}) {
 
-  //const d = props.data as ProtocoloType
-  
-  //console.log('inicio...',d)
-  
   const router = useRouter();
   
   const [codigo, setCodigo] = useState('013225/2018')
@@ -152,11 +151,11 @@ export default function ConsultaProcesso<iProps>({ data : d}) {
   const [dados, setDados] = useState(iniDados)
 
   const [loading, setLoading] = useState(false)
+  const [pesquisando, setPesquisando] = React.useState(false);
+
   const [achou, setAchou] = useState(false)
   const [msg, setMsg] = useState('')
-
-  const [pesquisou, setPesquisou] = useState(false)
-  
+ 
 
   // Progress para getServerSideProps()
   React.useEffect(() => {
@@ -167,6 +166,7 @@ export default function ConsultaProcesso<iProps>({ data : d}) {
 
     const end = () => {
       setLoading(false);
+      setPesquisando(false)
     };
 
     Router.events.on("routeChangeStart", start);
@@ -183,7 +183,7 @@ export default function ConsultaProcesso<iProps>({ data : d}) {
 
   useEffect( () => {
     
-    if (pesquisou) {
+    if (router.query?.cod) {
       if (d == null) {
         setMsg('Não cadastrado!')
       } else {
@@ -194,26 +194,42 @@ export default function ConsultaProcesso<iProps>({ data : d}) {
       setAchou(d != null)
     }
 
-  }, [d, pesquisou])
+  }, [d, router.query?.cod])
   
 
   function clickPesquisar(cod : string) {
-    setPesquisou(true)
 
     setLoading(true)
+    setPesquisando(true)
+
     setAchou(false)
     setMsg('')
 
     router.push(`/consultaProcesso?cod=${cod}`)
   }
 
-  
-  function limpar() {
+
+  // Progress
+  function f_progress() {
+    return (
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={pesquisando}
+        onClick={ () => setPesquisando(true) }
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    )
+  }
+
+  function f_limpar() {
     setCodigo('')
+    setMsg('')
   }
 
 
   return (
+
     <Grid container spacing={1} >
 
       <Grid item xs={12}>
@@ -240,7 +256,7 @@ export default function ConsultaProcesso<iProps>({ data : d}) {
           color="primary"
           size="small"
           startIcon={ <HighlightOffIcon fontSize="large" /> }
-          onClick={() => { limpar() }}
+          onClick={ f_limpar }
           style={{textTransform: 'none'}}
         >
           Limpar
@@ -255,8 +271,9 @@ export default function ConsultaProcesso<iProps>({ data : d}) {
         <Divider sx={{ marginTop:'10px' }} />
       </Grid>
 
-      { achou ? f_dadosProtocolo(dados) : null }
-              
+      { achou ? f_protocolo(dados) : null }
+      { pesquisando ? f_progress() : null }
+
     </Grid>
   )
 }
@@ -280,7 +297,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
-  console.log(data, Date())
+  //console.log(data?.areaAtual, Date())
 
   return {
     props: {data} // will be passed to the page component as props

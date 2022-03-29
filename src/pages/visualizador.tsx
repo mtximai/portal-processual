@@ -5,36 +5,26 @@ import { GetServerSideProps } from 'next'
 import Split from 'react-split'
 import styles from '../styles/Visualizador.module.css'
 import BtnSpinner from '../components/BtnSpinner';
-import ErrorPage from 'next/error'
 import VisualizadorAtos from '../components/VisualizadorAtos';
-
 
 interface iPeca {
   id: number
   nm_peca: string
 }
-
 interface iProps {
   cod: string,
   data: iPeca[]
 }
 
+
 export default function Visualizador<iProps>({ cod, data }) {
 
   //console.log(cod, data)
 
-  if (cod?.startsWith('Erro:')) {
-    return <Typography style={{color:'red'}}>{cod}</Typography>
-  }
-
-
-  // Utilizando componente para gerar Página de Erro
-  // return <ErrorPage statusCode={204} />
-
   const router = useRouter();
 
   const [pecas, setPecas] = useState<iPeca[]>([])
-  
+
   useEffect(() => {
     setPecas(data)
   },[data])
@@ -45,20 +35,28 @@ export default function Visualizador<iProps>({ cod, data }) {
     router.push(uri)
   }
 
+  if (cod?.startsWith('Erro:')) {
+    return <Typography style={{color:'red'}}>{cod}</Typography>
+  }
+
   return (
-    <Grid container>
+    <Grid
+      container
+      flexDirection='column'
+      // sx={{ outline: '5px solid yellow' }}
+    >
       <Grid item>
         <BtnSpinner onClick={f_onClick} />
       </Grid>
 
       <Grid item>
-        <VisualizadorAtos codProtocolo={cod} atos={pecas} />
+        <VisualizadorAtos codProtocolo={cod} atos={data} />
       </Grid>
     </Grid>
   )
 }
 
-//export const getServerSideProps: GetServerSideProps = async ({ params, res }) => {
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   
   const { query } = context
