@@ -16,13 +16,13 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import styles from '../styles/Layout.module.css'
 import { useRouter } from 'next/router'
 import MyToolbar from './MyToolbar'
 
 
 const drawerWidth = 300;
 
+// styled(Component, [options])(styles) => Component
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{ open?: boolean; }>
   ( ({ theme, open }) => ({
     flexGrow: 1,
@@ -93,6 +93,7 @@ export function useLayoutUpdate() {
   return useContext(LayoutContext)
 }
 
+
 // Component
 export default function Layout(props: iProps) {
 
@@ -147,12 +148,19 @@ export default function Layout(props: iProps) {
     callbackNotificacao: (func: (a:number, b: (p: number) => void) => void) => func(qtNotificacao, f_qtNotificacaoUpdate)
   }
 
+  const styles = {
+    active : {
+      backgroundColor: 'cornflowerblue',
+      color: 'white',
 
-  function f_teste(e){
-    console.log(e, router.pathname, e.path == router.pathname, styles.active )
-    return e.path == router.pathname ? styles.active:''
+      '&:hover': {
+        backgroundColor: 'rgb(16, 93, 236)',
+        color: 'white',
+      }
+    },
   }
 
+  
   return (
     <LayoutContext.Provider value={mValue}>
 
@@ -212,17 +220,22 @@ export default function Layout(props: iProps) {
 
               (e.text !== '-') ?
 
-                <ListItem button
+                <ListItem
+                  button
                   key={i}
                   onClick={() => router.push(e.path) }
-                  className = { f_teste(e) }
+                  sx= { e.path == router.pathname ? styles.active : {} }
                 >
                   <ListItemIcon>
                     {e.icon}
                   </ListItemIcon>
 
-                  <ListItemText primary={e.text} />
+                  <ListItemText
+                    primary={e.text} 
+                  />
+
                 </ListItem>
+
                 : <Divider key={i} />
             )}
 

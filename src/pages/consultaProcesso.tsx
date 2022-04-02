@@ -287,7 +287,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   let data: ProtocoloType = null
 
   if (cod) {
-    const mUrl = `${mEtcm}/api/portaljurisdicionado/protocolo?cod=${cod}`
+    const mUrl = `${mEtcm}/api/portaljurisdicionado/processual/protocolo?cod=${cod}`
     
     // Busca dados
     const resp = await fetch(mUrl)

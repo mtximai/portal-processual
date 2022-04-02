@@ -1,3 +1,5 @@
+# https://www.koyeb.com/tutorials/how-to-dockerize-and-deploy-a-next-js-application-on-koyeb
+
 FROM node:16.14.0-alpine as build
 WORKDIR /app
 COPY package.json ./

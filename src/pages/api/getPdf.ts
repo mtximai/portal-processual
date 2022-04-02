@@ -28,7 +28,7 @@ const options = {
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   
   const cod = req.query.cod;
-  const url = `${etcm}/api/portaljurisdicionado/protocoloObterArquivo?cod=${cod}`;
+  const url = `${etcm}/api/portaljurisdicionado/processual/protocoloObterArquivo?cod=${cod}`;
 
   const response = await fetch(url, options);
 

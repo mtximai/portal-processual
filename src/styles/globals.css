@@ -34,3 +34,7 @@ a {
   background-image: url('/img/horizontal.png');
   cursor: row-resize;
 }
+
+.MuiTreeItem-content {
+  font-size: 8px;
+}

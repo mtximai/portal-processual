@@ -1,18 +1,16 @@
-// 19/03/22
+// https://github.com/wojtekmaj/react-pdf  (19/03/22)
+// > npm install react-pdf
 
 import React from 'react'
-import { Box, Grid, SvgIconProps, Typography } from '@mui/material';
+import { Box, Grid, SvgIconProps } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import Split from 'react-split'
 import TreeView from '@mui/lab/TreeView';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import TreeItem, { TreeItemProps, treeItemClasses } from '@mui/lab/TreeItem';
-import { styled, useTheme } from '@mui/material/styles';
-
-
-// https://github.com/wojtekmaj/react-pdf
-// > npm install react-pdf
-
+import { createTheme, styled, ThemeProvider, useTheme } from '@mui/material/styles';
+import styles from './VisualizadorAtos.module.css'
 
 import { Document, Page, pdfjs } from "react-pdf";
 
@@ -131,13 +129,8 @@ export default function VisualizadorAtos<iProps>({ codProtocolo, atos }) {
 
   const [urlPeca, setUrlPeca] = React.useState('')
 
-  function f_itemClick(e) {
-
-    const peca = atos.find((p) => p.id==e)
-
-    const etcm = process.env.NEXT_PUBLIC_ETCM_URL
-    const url  = `/api/getPdf?cod=${peca.arquivo}`
-
+  function f_itemClick(codArquivo) {
+    const url = `/api/getPdf?cod=${codArquivo}`
     setUrlPeca(url)
   }
 
@@ -172,7 +165,7 @@ export default function VisualizadorAtos<iProps>({ codProtocolo, atos }) {
         padding='5px'
         borderRadius='5px'
         // border='1px solid green'
-        sx={{backgroundColor:'#cdcde6'}}
+        sx={{backgroundColor:'#e8eaf6'}}
       >
 
         <Split
@@ -188,19 +181,26 @@ export default function VisualizadorAtos<iProps>({ codProtocolo, atos }) {
               aria-label="file system navigator"
               defaultCollapseIcon={<ExpandMoreIcon />}
               defaultExpandIcon={<ChevronRightIcon />}
+              defaultExpanded={['root']}
               sx={{
                 color:'blue'
               }}
             >
-              <TreeItem nodeId="0" label={codProtocolo} sx={{height:'80vh'}}>
+              <TreeItem nodeId='root' label={codProtocolo} sx={{height:'80vh'}}>
                 { atos && atos.map( (p, i) =>
+
                   <TreeItem
-                    nodeId={`${i+1}`}
+                    nodeId={`${i}`}
                     label={`${p.id} - ${p.nm_peca}`}
-                    key={p.id+1}
-                    onClick={() => f_itemClick(p.id)}
-                    sx={{fontSize:' 8px' }}
+                    key={p.id}
+                    onClick={() => f_itemClick(p.arquivo)}
+                    sx={{
+                      '& .MuiTreeItem-label': {
+                        fontSize: '0.7rem',
+                      },
+                    }}
                   />
+
                 )}
               </TreeItem>
             </TreeView>

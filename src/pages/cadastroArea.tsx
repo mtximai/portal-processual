@@ -88,7 +88,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
   
-  const mUrl  = `${mEtcm}/api/portaljurisdicionado/AreaAtual`
+  const mUrl  = `${mEtcm}/api/portaljurisdicionado/processual/AreaAtual`
 
   // Busca dados
   const response = await fetch(mUrl)
