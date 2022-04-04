@@ -17,19 +17,19 @@ import { Document, Page, pdfjs } from "react-pdf";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 
-const MyItem = styled(TreeItem)({
-  fontSize:'10px'
-})
+// const MyItem = styled(TreeItem)({
+//   fontSize:'10px'
+// })
 
-interface iPeca {
-  id: number
-  nm_peca: string
-}
+// interface iPeca {
+//   id: number
+//   nm_peca: string
+// }
 
-interface iProps {
-  codProtocolo: string,
-  atos: iPeca[]
-}
+// interface iProps {
+//   codProtocolo: string,
+//   atos: iPeca[]
+// }
 
 declare module 'react' {
   interface CSSProperties {
@@ -141,8 +141,6 @@ export default function VisualizadorAtos<iProps>({ codProtocolo, atos }) {
 
   return (
 
-    // <Box sx={{ flexGrow: 1, height:'800px', border:'1px solid red'}}>
-
     <Grid
       container
       direction='column'
@@ -152,19 +150,10 @@ export default function VisualizadorAtos<iProps>({ codProtocolo, atos }) {
       borderRadius='5px'
       sx={{backgroundColor:'#ccc' }}
     >
-      {/* <Grid
-        item xs={12}
-        alignSelf='center'
-        style={{backgroundColor:'#ccc', color:'blue'}}
-      >
-        <Typography fontWeight='bold'>Visualizador de Atos: {codProtocolo}</Typography>
-      </Grid> */}
-
       <Grid
         item xs={12}
         padding='5px'
         borderRadius='5px'
-        // border='1px solid green'
         sx={{backgroundColor:'#e8eaf6'}}
       >
 
@@ -199,6 +188,7 @@ export default function VisualizadorAtos<iProps>({ codProtocolo, atos }) {
                         fontSize: '0.7rem',
                       },
                     }}
+                    title={p.nm_tipo}
                   />
 
                 )}
@@ -208,14 +198,6 @@ export default function VisualizadorAtos<iProps>({ codProtocolo, atos }) {
           </div>
 
           <div style={{ overflow:'scroll' }}>
-            {/* <iframe
-              //src="http://localhost:2446/api/portaljurisdicionado/protocoloObterArquivo?cod=2F98E8AA882AEEDADB4D0DE3E4F9B7E2"
-              src="https://portal.tcm.sp.gov.br/Management/GestaoPublicacao/Documento?id=86618"
-              height='99%'
-              width='100%'
-              style={{ width: "563px", height: "666px" }}
-            >
-            </iframe> */}
 
             <DocumentWrapper>
 

@@ -10,7 +10,9 @@ import VisualizadorAtos from '../components/VisualizadorAtos';
 interface iPeca {
   id: number
   nm_peca: string
+  nm_tipo: string
 }
+
 interface iProps {
   cod: string,
   data: iPeca[]
@@ -23,11 +25,11 @@ export default function Visualizador<iProps>({ cod, data }) {
 
   const router = useRouter();
 
-  const [pecas, setPecas] = useState<iPeca[]>([])
+  // const [pecas, setPecas] = useState<iPeca[]>([])
 
-  useEffect(() => {
-    setPecas(data)
-  },[data])
+  // useEffect(() => {
+  //   setPecas(data)
+  // },[data])
 
 
   function f_onClick() {
@@ -43,7 +45,6 @@ export default function Visualizador<iProps>({ cod, data }) {
     <Grid
       container
       flexDirection='column'
-      // sx={{ outline: '5px solid yellow' }}
     >
       <Grid item>
         <BtnSpinner onClick={f_onClick} />
