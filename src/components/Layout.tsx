@@ -186,7 +186,7 @@ export default function Layout(props: iProps) {
 
             <Box sx={{ flexGrow: 1 }} />
 
-            <MyToolbar qtCorreio={qtCorreio} qtNotificacao={qtNotificacao} />
+            <MyToolbar qtNotificacao={qtNotificacao} />
           </Toolbar>
 
         </AppBar>

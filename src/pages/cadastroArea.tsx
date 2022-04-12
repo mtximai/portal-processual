@@ -71,6 +71,7 @@ export default function CadastroArea(props) {
           <DataGrid rows={dados} columns={columns}
             pageSize={5}
             rowsPerPageOptions={[5]}
+            density='compact'
             checkboxSelection
             disableSelectionOnClick
           />

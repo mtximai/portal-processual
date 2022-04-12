@@ -6,12 +6,14 @@ import { HomeOutlined, ArticleOutlined, NotificationsNoneOutlined } from '@mui/i
 
 const menuItens = [
   { text: 'Home', icon: <HomeOutlined />, path: '/' },
-  { text: 'Consulta Processo', icon: <ArticleOutlined />, path: '/consultaProcesso' },
-  { text: 'Consulta Áreas ativas', icon: <ArticleOutlined />, path: '/cadastroArea' },
-  { text: 'Visualizador de Atos', icon: <ArticleOutlined />, path: '/visualizador' },
+  { text: 'Mesa de trabalho', icon: <MailIcon />, path: '/mesa' },
+  { text: 'Enviar protocolo', icon: <MailIcon />, path: '/protocoloEnviar' },
+  { text: 'Consultar protocolo', icon: <MailIcon />, path: '/protocoloConsultar' },
+  { text: 'Caixa Postal', icon: <MailIcon />, path: '/caixaPostal' },
   { text: '-' },
-  { text: 'Notificações', icon: <NotificationsNoneOutlined />, path: '/notificacao' },
-  { text: 'Correio', icon: <MailIcon />, path: '/correio' },
+  { text: 'Consulta Processo', icon: <ArticleOutlined />, path: '/consultaProcesso' },
+  { text: 'Visualizador de Atos', icon: <ArticleOutlined />, path: '/visualizador' },
+  { text: 'Consulta Áreas ativas', icon: <ArticleOutlined />, path: '/cadastroArea' },
 ]
 
 function MyApp({ Component, pageProps }) {
