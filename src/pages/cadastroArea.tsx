@@ -19,38 +19,36 @@ interface AreaProps {
   data: object[]
 }
 
+// Colunas da GRID
+const columns = [
+  { field: 'id', headerName: 'Código', width: 90 },
+  { field: 'nome', headerName: 'Nome', width: 400, editable: false}
+];
+
 
 // Componente
 export default function CadastroArea(props) {
   
+  const data = props.data
   const [dados, setDados] = useState([])
+
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState('');
   
   const router = useRouter();
-  const data = props.data
 
   useEffect(() => {
     setDados(data)
   }, [data])
 
   
-  // Colunas da GRID
-  const columns = [
-    { field: 'id', headerName: 'Código', width: 90 },
-    { field: 'nome', headerName: 'Nome', width: 400, editable: false}
-  ];
-  
-
   function clickPesquisar() {
-
     setLoading(true)
     setMsg('')
 
     router.push('/cadastroArea')
 
     setLoading(false)
-
   }
 
   return (
@@ -85,6 +83,8 @@ export default function CadastroArea(props) {
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+
+  console.log('api................')
 
   const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
   
