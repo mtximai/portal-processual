@@ -19,6 +19,11 @@ interface AreaProps {
   data: object[]
 }
 
+// Colunas da GRID
+const columns = [
+  { field: 'id', headerName: 'Código', width: 90 },
+  { field: 'nome', headerName: 'Nome', width: 400, editable: false}
+];
 
 // Componente
 export default function CadastroArea(props) {
@@ -34,23 +39,13 @@ export default function CadastroArea(props) {
     setDados(data)
   }, [data])
 
-  
-  // Colunas da GRID
-  const columns = [
-    { field: 'id', headerName: 'Código', width: 90 },
-    { field: 'nome', headerName: 'Nome', width: 400, editable: false}
-  ];
-  
-
   function clickPesquisar() {
-
     setLoading(true)
     setMsg('')
 
     router.push('/cadastroArea')
 
     setLoading(false)
-
   }
 
   return (
@@ -73,6 +68,7 @@ export default function CadastroArea(props) {
           <DataGrid rows={dados} columns={columns}
             pageSize={5}
             rowsPerPageOptions={[5]}
+            density='compact'
             checkboxSelection
             disableSelectionOnClick
           />
