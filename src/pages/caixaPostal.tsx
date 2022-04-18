@@ -98,8 +98,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const options = {
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      'Accept': 'application/json;charset=utf-8',
+      'Content-Type': 'application/json;charset=utf-8'
     },
     method: "POST",
     body: JSON.stringify({IdUsuarioExterno: 28, CodUg: 301692})
