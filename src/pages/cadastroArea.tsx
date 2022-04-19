@@ -25,20 +25,23 @@ const columns = [
   { field: 'nome', headerName: 'Nome', width: 400, editable: false}
 ];
 
+
 // Componente
 export default function CadastroArea(props) {
   
+  const data = props.data
   const [dados, setDados] = useState([])
+
   const [loading, setLoading] = useState(false)
   const [msg, setMsg] = useState('');
   
   const router = useRouter();
-  const data = props.data
 
   useEffect(() => {
     setDados(data)
   }, [data])
 
+  
   function clickPesquisar() {
     setLoading(true)
     setMsg('')
@@ -81,6 +84,8 @@ export default function CadastroArea(props) {
 
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+
+  console.log('api................')
 
   const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
   
