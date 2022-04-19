@@ -19,7 +19,6 @@ Gerar container: (14/03/22)
 
   > docker image build -t mtximai/portal-processual:1.0 .
   > docker image ls
-
   > docker run -p 3000:3000 -it --name portal-processual mtximai/portal-processual:1.0
 
   > docker login --username=mtximai
@@ -74,4 +73,6 @@ https://www.npmjs.com/package/react-pdfobject
 
 > npm i react-pdfobject
 
-
+DevExtreme (18/04/22)
+> npm install devextreme@21.2 devextreme-react@21.2 --save --save-exact
+> npm install --save exceljs file-saver

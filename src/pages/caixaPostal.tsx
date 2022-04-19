@@ -1,121 +1,142 @@
-// 12/04/22
+// 19/04/22 - Tela com DevExtreme
 
-import Typography from "@mui/material/Typography";
-import BtnSpinner from "../components/BtnSpinner";
-import { iContext, useLayoutUpdate } from "../components/Layout";
-import MailIcon from '@mui/icons-material/Mail';
-import { GetServerSideProps } from "next/types";
-import { useEffect, useState } from "react";
-import { DataGrid } from '@mui/x-data-grid';
-import { useRouter } from 'next/router'
-
+import React, { useCallback, useEffect, useState } from 'react'
+import 'devextreme/dist/css/dx.light.css';
+import Button2 from 'devextreme-react/button';
 import {
-  Card, CardHeader, CardContent,
-  Divider,
-  Box, Grid,
-} from '@mui/material';
+  DataGrid,
+  Column,
+  Selection,
+  Export,
+  Button,
+  Grouping,
+  GroupPanel,
+  Pager,
+  Paging,
+  SearchPanel,
+} from 'devextreme-react/data-grid';
 
+import { Workbook } from 'exceljs';
+import saveAs from 'file-saver';
+import { exportDataGrid } from 'devextreme/excel_exporter';
 
-// Colunas da GRID
-const columns = [
-  { field: 'id', headerName: 'Código', width: 90, hide: true },
-  { field: 'COD_TCE', headerName: 'Protocolo', width: 120, editable: false},
-  { field: 'COD_PROCESSO', headerName: 'Processo', width: 140, editable: false},
-  { field: 'NM_AREA', headerName: 'Área', width: 250, editable: false, renderCell: (p) => (<div title={p.value}>{p.value}</div>) },
-  { field: 'NM_STATUS', headerName: 'Status', width: 120, editable: false},
-  { field: 'NM_STATUS_LEITURA', headerName: 'Status leitura', width: 120, editable: false},
-  { field: 'DATA_VISUALIZACAO', headerName: 'Data ciência', width: 120, editable: false},
-  { field: 'DATA_RESPOSTA', headerName: 'Data resposta', width: 120, editable: false},
-  { field: 'DATA_NOTIFICACAO', headerName: 'Data notificação', width: 120, editable: false, renderCell: (p) => {
-    console.log(p, typeof p)
-  return <div title={p.value}>{p.value}</div>} },
-];
+//import 'devextreme/dist/css/dx.light.css';
+//import 'devextreme/dist/css/dx.dark.css';
+//import 'devextreme/dist/css/dx.material.blue.light.compact.css';
+//import 'devextreme/dist/css/dx.material.teal.light.compact.css';
+import 'devextreme/dist/css/dx.material.purple.light.compact.css';
+//import 'devextreme/dist/css/dx.light.css';
 
-export default function CaixaPostal(props) {
+import styles from '../../styles/Estilos.module.css'
+import Box from '@mui/material/Box';
 
-  const [dados, setDados] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [msg, setMsg] = useState('');
+function exportGrid(e) {
+  const workbook = new Workbook(); 
+  const worksheet = workbook.addWorksheet("Planilha"); 
 
-  useEffect(() => {
-    let r = props.data.map((e,i) => {
-      return {id: i, ...e}
-    })
+  exportDataGrid({ 
+      worksheet: worksheet, 
+      component: e.component
+  }).then(function() {
+      workbook.xlsx.writeBuffer().then(function(buffer) { 
+          saveAs(new Blob([buffer], { type: "application/octet-stream" }), "Portal-CaixaPostal.xlsx"); 
+      }); 
+  });
 
-    setDados(r)
-  }, [])
-
-  function clickPesquisar() {
-    setLoading(true)
-    setMsg('')
-
-    router.push('/caixaPostal')
-
-    setLoading(false)
-  }
-
-  const router = useRouter();
-
-
-  // const ctxLayout = useLayoutUpdate() as iContext
-  // function f_onClick() {
-  //   ctxLayout.callbackCorreio( (q,f) => f(q+1) )
-  // }
-  
-  return (
-    
-    <Card>
-      <CardHeader title="Caixa Postal" />
-
-      <CardContent>
-
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-
-          <BtnSpinner loading={ loading } onClick={ clickPesquisar } text='Atualizar' />
-
-          <Typography sx={{ fontWeight: 'bold', marginLeft:'10px', color: `${ msg.startsWith('Erro:') ? 'red':'blue' }` }}>{msg}</Typography>
-
-        </Box>
-
-        <Divider sx={{marginTop: '10px'}} />
-
-        <div style={{ height: 500, width: '100%' }}>
-          <DataGrid rows={dados} columns={columns}
-            pageSize={10}
-            rowsPerPageOptions={[10]}
-            density='compact'
-            checkboxSelection
-            disableSelectionOnClick
-          />
-        </div>
-
-      </CardContent>
-    </Card>
-  )
+  e.cancel = true; 
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+// type: 'percent|currency'
+const gdpFormat = {
+  type: 'currency',
+  precision: 2,
+};
 
-  const options = {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    method: "POST",
-    body: JSON.stringify({IdUsuarioExterno: 28, CodUg: 301692})
+const pageSizes = [10, 25, 50, 100];
+
+export default function CaixaPostal() {
+
+  const [timeStamp, setTimeStamp] = useState<string>()
+  const [dt, setDt] = useState([])
+
+  useEffect(() => {
+    const f = fetch("/api/getCaixaPostal")
+              .then((r) => r.json())
+              .then((p) => setDt(p))
+  }, [timeStamp])
+
+  const selectItem = useCallback((e) => {
+    e.component.byKey(e.currentSelectedRowKeys[0]).done(p => {
+        console.log(p)
+    });
+  }, []);
+
+  function f_atualizar() {
+    setTimeStamp(Date())
   }
 
-  const idUsuario = 28
-  const codUg = 301692
-  const mEtcm = process.env.NEXT_PUBLIC_ETCM_URL
-  
-  const mUrl  = `${mEtcm}/api/portaljurisdicionado/processual/caixaPostal`
+  function cloneIconClick(e) {
+    console.log(e.row.rowIndex, e.row.data)
 
-  // Busca dados
-  const response = await fetch(mUrl, options)
-  const data = await response.json()
+    // const employees = [...this.state.employees];
+    // const clonedItem = { ...e.row.data, ID: service.getMaxID() };
 
-  return {
-    props: {data},
+    // employees.splice(e.row.rowIndex, 0, clonedItem);
+    // this.setState({ employees });
+
+    e.event.preventDefault();
   }
+
+  return (
+    <>
+      <Box
+        sx={{display:'flex', justifyContent:'space-between'}}
+      >
+        <Button2
+          text="Atualizar"
+          onClick={f_atualizar}
+        />
+
+        <span>{`Atualização: ${timeStamp}`}</span>
+
+      </Box>
+
+      <div style={{ height:"600px", padding:"0px", overflow:'auto' }}>
+        <DataGrid  
+          id="dataGrid"
+          keyExpr="COD"
+          dataSource={dt}
+          allowColumnResizing={true}
+          showBorders={true}
+          rowAlternationEnabled={true}
+          onSelectionChanged={selectItem}
+          style={{padding:"10px 0px"}}
+          onExporting={exportGrid}
+        >
+          <Selection mode="single" />
+
+          <SearchPanel visible={true} highlightCaseSensitive={true} />
+
+          <Column type="buttons" width={110}>
+            <Button hint="Notificação" icon="email" visible={true} disabled={false} onClick={cloneIconClick} />
+          </Column>
+
+          <Column caption='Protocolo'   dataField="COD_TCE" dataType="string" width={120} />
+          <Column caption='Processo'    dataField="COD_PROCESSO"    dataType="string" width={140} />
+          <Column caption='Área'        dataField="NM_AREA" dataType="string" width={250} />
+          <Column caption='Status'            dataField="NM_STATUS" dataType="string" width={120} />
+          <Column caption='Status leitura'    dataField="NM_STATUS_LEITURA" dataType="string" width={120} />
+          <Column caption='Data ciência'      dataField="DATA_VISUALIZACAO" dataType="date" width={120} />
+          <Column caption='Data resposta'     dataField="DATA_RESPOSTA" dataType="date" width={120} />
+          <Column caption='Data notificação'  dataField="DATA_NOTIFICACAO" dataType="date" width={130} />
+
+          <Pager allowedPageSizes={pageSizes} showPageSizeSelector={true} />
+          <Paging defaultPageSize={10} />
+
+          <Export enabled={true} allowExportSelectedData={false} />
+        </DataGrid>
+
+      </div>
+    </>
+  )
 }
