@@ -1,6 +1,10 @@
 // Mauro - 10/03/21
 
 import React, { useState, useEffect, useContext } from 'react';
+
+import 'devextreme/dist/css/dx.common.css';
+import 'devextreme/dist/css/dx.light.css';
+
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';

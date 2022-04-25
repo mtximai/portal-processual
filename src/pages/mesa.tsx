@@ -1,12 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import 'devextreme/dist/css/dx.light.css';
+
+import 'devextreme/dist/css/dx.material.purple.light.compact.css';
+
 import Button2 from 'devextreme-react/button';
+
 import {
   DataGrid,
   Column,
   Selection,
   Export,
   Button,
+  LoadPanel,
   Grouping,
   GroupPanel,
   Pager,
@@ -18,11 +22,6 @@ import { Workbook } from 'exceljs';
 import saveAs from 'file-saver';
 import { exportDataGrid } from 'devextreme/excel_exporter';
 
-//import 'devextreme/dist/css/dx.light.css';
-//import 'devextreme/dist/css/dx.dark.css';
-//import 'devextreme/dist/css/dx.material.blue.light.compact.css';
-//import 'devextreme/dist/css/dx.material.teal.light.compact.css';
-import 'devextreme/dist/css/dx.material.purple.light.compact.css';
 
 import styles from '../../styles/Estilos.module.css'
 import Box from '@mui/material/Box';
@@ -109,7 +108,10 @@ export default function Mesa() {
           onSelectionChanged={selectItem}
           style={{padding:"10px 0px"}}
           onExporting={exportGrid}
+          height={540}
         >
+          <LoadPanel enabled />
+
           <Selection mode="single" />
 
           <SearchPanel visible={true} highlightCaseSensitive={true} />
@@ -124,7 +126,7 @@ export default function Mesa() {
           <Column caption='Ofício'      dataField="NR_OFICIO" dataType="string" width={100} />
           <Column caption='Ano Ofício'  dataField="ANO_OFICIO" dataType="string" width={100} />
           <Column caption='Meio de Entrada'  dataField="MEIOENTRADA" dataType="string" width={100} />
-          <Column caption='Registro'  dataField="DATA_ENTRADA" dataType="string" width={100} />
+          <Column caption='Registro'  dataField="DATA_ENTRADA" dataType="date" format="dd/MM/yyyy" width={110} />
 
           <Column caption='Tipo'      dataField="TIPO" dataType="string" width={100} />
           <Column caption='Exercício' dataField="ANO_EXERCICIO" dataType="string" width={100} />

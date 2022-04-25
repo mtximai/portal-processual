@@ -1,7 +1,8 @@
 // 19/04/22 - Tela com DevExtreme
 
 import React, { useCallback, useEffect, useState } from 'react'
-import 'devextreme/dist/css/dx.light.css';
+import 'devextreme/dist/css/dx.material.purple.light.compact.css';
+
 import Button2 from 'devextreme-react/button';
 import {
   DataGrid,
@@ -9,6 +10,7 @@ import {
   Selection,
   Export,
   Button,
+  LoadPanel,
   Grouping,
   GroupPanel,
   Pager,
@@ -19,14 +21,6 @@ import {
 import { Workbook } from 'exceljs';
 import saveAs from 'file-saver';
 import { exportDataGrid } from 'devextreme/excel_exporter';
-
-//import 'devextreme/dist/css/dx.light.css';
-//import 'devextreme/dist/css/dx.dark.css';
-//import 'devextreme/dist/css/dx.material.blue.light.compact.css';
-//import 'devextreme/dist/css/dx.material.teal.light.compact.css';
-import 'devextreme/dist/css/dx.material.purple.light.compact.css';
-//import 'devextreme/dist/css/dx.light.css';
-
 import styles from '../../styles/Estilos.module.css'
 import Box from '@mui/material/Box';
 
@@ -112,7 +106,9 @@ export default function CaixaPostal() {
           onSelectionChanged={selectItem}
           style={{padding:"10px 0px"}}
           onExporting={exportGrid}
+          height={540}
         >
+          <LoadPanel enabled />
           <Selection mode="single" />
 
           <SearchPanel visible={true} highlightCaseSensitive={true} />
@@ -126,9 +122,9 @@ export default function CaixaPostal() {
           <Column caption='Área'        dataField="NM_AREA" dataType="string" width={250} />
           <Column caption='Status'            dataField="NM_STATUS" dataType="string" width={120} />
           <Column caption='Status leitura'    dataField="NM_STATUS_LEITURA" dataType="string" width={120} />
-          <Column caption='Data ciência'      dataField="DATA_VISUALIZACAO" dataType="date" width={120} />
-          <Column caption='Data resposta'     dataField="DATA_RESPOSTA" dataType="date" width={120} />
-          <Column caption='Data notificação'  dataField="DATA_NOTIFICACAO" dataType="date" width={130} />
+          <Column caption='Data ciência'      dataField="DATA_VISUALIZACAO" dataType="date" format="dd/MM/yyyy" width={120} />
+          <Column caption='Data resposta'     dataField="DATA_RESPOSTA"     dataType="date" format="dd/MM/yyyy" width={120} />
+          <Column caption='Data notificação'  dataField="DATA_NOTIFICACAO"  dataType="date" format="dd/MM/yyyy" width={130} />
 
           <Pager allowedPageSizes={pageSizes} showPageSizeSelector={true} />
           <Paging defaultPageSize={10} />
