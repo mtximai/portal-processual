@@ -1,26 +1,38 @@
 import React from 'react'
-
-import Form, {
-  SimpleItem,
-  GroupItem,
-  Label,
-} from 'devextreme-react/form';
+//import 'devextreme/dist/css/dx.material.purple.light.compact.css';
 
 import 'devextreme-react/text-area';
-import Button from 'devextreme-react/button';
+import Button      from 'devextreme-react/button';
+import DateBox     from 'devextreme-react/date-box';
+import TextBox     from 'devextreme-react/text-box';
+import DropDownBox from 'devextreme-react/drop-down-box';
+import SelectBox   from 'devextreme-react/select-box';
 
+import Box, { Item,} from 'devextreme-react/box';
+
+import notify  from 'devextreme/ui/notify';
+
+import Form, { SimpleItem, GroupItem, Label,} from 'devextreme-react/form';
+import { DataGrid, Column, Selection, Export, LoadPanel, Grouping, GroupPanel, Pager, Paging, SearchPanel,} from 'devextreme-react/data-grid';
+
+import { Workbook } from 'exceljs';
+import saveAs from 'file-saver';
+import { exportDataGrid } from 'devextreme/excel_exporter';
+
+import ValidationSummary from 'devextreme-react/validation-summary';
 import {
-  DataGrid,
-  Column,
-  Selection,
-  Export,
-  LoadPanel,
-  Grouping,
-  GroupPanel,
-  Pager,
-  Paging,
-  SearchPanel,
-} from 'devextreme-react/data-grid';
+  Validator,
+  RequiredRule,
+  CompareRule,
+  CustomRule,
+  EmailRule,
+  PatternRule,
+  StringLengthRule,
+  RangeRule,
+  AsyncRule,
+} from 'devextreme-react/validator';
+
+
 
 interface iFiltro {
   dtIni: string
@@ -30,125 +42,252 @@ interface iFiltro {
   situacaoAtual: number
 }
 
-const filtro: iFiltro = {
+const filtroIni: iFiltro = {
   dtIni: '01/01/2022',
-  dtFim: '01/01/22022',
+  dtFim: '01/01/2022',
   tpRemessa: 0,
   areaAtual: 0,
   situacaoAtual: 0
 }
 
+const tpRemessa = [
+  {cod: 'D', descricao: 'Documento'},
+  {cod: 'P', descricao: 'Processo'},
+]
+
+const currentDate = new Date();
+const maxDate = new Date(currentDate.setFullYear(currentDate.getFullYear() - 21));
+
 export default function ProtocoloConsultar() {
+
+  const [filtro, setFiltro] = React.useState<iFiltro>(filtroIni)
+  
+  // React.useEffect(() => {
+  //   console.log('useEffect:', filtro)
+  // }, [filtro])
+
+  function f_click(e) {
+    const buttonText = e.component.option('text');
+    notify(`The ${capitalize(buttonText)} button was clicked`);
+  
+    console.log(filtro)
+  }
+  
+  function f_ValidarDtFim(e) {
+    //console.log(e.value)
+
+    const ini:number = (new Date(filtro.dtIni)).getTime()
+    const fim:number = (new Date(filtro.dtFim)).getTime()
+
+    //console.log('f_ValidarDtFim', ini, fim, fim >= ini)
+
+    return (fim >= ini)
+  }
+
+
   return (
     <div>
 
-    <div style={{width: '600px'}}>
+      <Box
+        direction="row"
+        width="800px"
+        height="100%"
+      >
+        <Item ratio={1}>
+          <div className="rect demo-dark">
 
-      <Form formData={filtro}>
+            <div className="dx-fieldset" style={{marginTop:'0px'}}>
 
-        <GroupItem cssClass={''} colCount={2} caption='Filtro para consulta'>
+              <div className="dx-field">
+                <div className="dx-field-label">Data inicial</div>
+                <div className="dx-field-value">
+                  <DateBox
+                    value={filtro.dtIni}
+                    placeholder="dd/mm/yyyy"
+                    showClearButton={true}
+                    useMaskBehavior={true}
+                    type="date"
+                    displayFormat="dd/MM/yyyy"
+                    invalidDateMessage="A data deve estar no seguinte formato: dd/MM/yyyy"
+                    onValueChange={(p) => setFiltro({...filtro, dtIni: p}) }
+                  >
+                    <Validator>
+                      <RequiredRule message="A data é obrigatória!" />
+                    </Validator>
+                  </DateBox>
+                </div>
+              </div>
 
-          {/* Coluna 1 */}
-          <GroupItem>
-            <SimpleItem dataField="dtIni">
-              <Label text="Dt.Entrada de" />
-            </SimpleItem>
+              <div className="dx-field">
+                <div className="dx-field-label">Data final</div>
+                <div className="dx-field-value">
+                  <DateBox
+                    value={filtro.dtFim}
+                    placeholder="dd/mm/yyyy"
+                    showClearButton={true}
+                    useMaskBehavior={true}
+                    type="date"
+                    displayFormat="dd/MM/yyyy"
+                    onValueChange={(p) => setFiltro({...filtro, dtFim: p}) }
+                  >
+                    <Validator>
+                      <CustomRule
+                        validationCallback={f_ValidarDtFim}
+                        message="Data final não pode ser menor que a data inicial!"
+                      />
+                    </Validator>
+                  </DateBox>
+                </div>
+              </div>
 
-            <SimpleItem dataField="tpRemessa">
-              <Label text="Tipo de Remessa" />
-            </SimpleItem>
+              <div className="dx-field">
+                <div className="dx-field-label">Tipo de remessa</div>
+                <div className="dx-field-value">
+                  <SelectBox dataSource={tpRemessa}
+                    displayExpr="descricao"
+                    valueExpr="cod"
+                    defaultValue={'D'}
+                    searchEnabled={true}
+                    //value={x}
+                    //onValueChanged={(p) => console.log(p.value, x) }
+                    />
+                </div>
+              </div>
 
-            <SimpleItem dataField="areaAtual">
-              <Label text="Área atual" />
-            </SimpleItem>
+              {/* <div style={{marginTop:'15px'}}> */}
 
-          </GroupItem>
+              <div className="dx-fieldset">
+                <ValidationSummary id="summary"></ValidationSummary>
+                
+                <Button
+                  text="Limpar"
+                  style={{marginRight:'15px'}}
+                  type='default'
+                  stylingMode="outlined"
+                />
 
+                <Button
+                  text="Pesquisar"
+                  type='default'
+                  stylingMode="outlined"
+                  onClick={f_click}
+                />
+              </div>
 
-          {/* Coluna 2 */}
-          <GroupItem>
-            <SimpleItem dataField="dtFim">
-              <Label text="até" />
-            </SimpleItem>
-         
-            <SimpleItem dataField="situacaoAtual">
-              <Label text="Situação atual" />
-            </SimpleItem>
-          </GroupItem>
+            </div>
+          </div>
 
-        {/* </GroupItem>
+        </Item>
 
-        <GroupItem> */}
+        <Item ratio={1}>
+          <div className="rect demo-light">
 
-        </GroupItem>
+            <div className="dx-fieldset" style={{marginTop:'0px'}}>
 
+              <div className="dx-field">
+                <div className="dx-field-label">Área atual</div>
+                <div className="dx-field-value">
+                  <SelectBox dataSource={tpRemessa}
+                    displayExpr="descricao"
+                    valueExpr="cod"
+                    defaultValue={'P'}
+                    searchEnabled={true}
+                    //value={x}
+                    //onValueChanged={(p) => console.log(p.value, x) }
+                  />
+                </div>
+              </div>
 
-      </Form>
+              <div className="dx-field">
+                <div className="dx-field-label">Situação atual</div>
+                <div className="dx-field-value">
+                  <SelectBox dataSource={tpRemessa}
+                    displayExpr="descricao"
+                    valueExpr="cod"
+                    defaultValue={'P'}
+                    searchEnabled={true}
+                    //value={x}
+                    //onValueChanged={(p) => console.log(p.value, x) }
+                  />
+                </div>
+              </div>
 
-      <Button
-        text="Limpar"
-        style={{marginRight:'15px'}}
-        type='default'
-      />
+            </div>
+          </div>
 
-      <Button
-        text="Pesquisar"
-        type='default'
-      />
+        </Item>
 
-      <hr/>
+      </Box>
 
+      <div style={{ height:"600px", width:'100%', padding:"5px", overflow:'auto', border: '1px solid #cccc', borderRadius:'5px' }}>
 
+        <DataGrid  
+          id="dataGrid"
+          keyExpr="PROTOCOLO"
+          dataSource={'../data/mesa.json'}
+          allowColumnResizing={true}
+          showBorders={true}
+          rowAlternationEnabled={true}
+          // onSelectionChanged={selectItem}
+          style={{padding:"5px"}}
+          onExporting={exportGrid}
+          height={580}
+        >
+          <LoadPanel enabled />
+
+          <Selection mode="single" />
+
+          <SearchPanel visible={true} highlightCaseSensitive={true} />
+
+          <Column caption='Protocolo'   dataField="COD_TCE" dataType="string" width={110} />
+          <Column caption='Processo'    dataField="PROCESSO"    dataType="string" width={150} />
+          <Column caption='Tipo'        dataField="TIPO_PROTOCOLO" dataType="string" width={120} />
+          <Column caption='Ofício'      dataField="NR_OFICIO" dataType="string" width={100} />
+          <Column caption='Ano Ofício'  dataField="ANO_OFICIO" dataType="string" width={100} />
+          <Column caption='Meio de Entrada'  dataField="MEIOENTRADA" dataType="string" width={100} />
+          <Column caption='Registro'  dataField="DATA_ENTRADA" dataType="date" format="dd/MM/yyyy" width={110} />
+
+          <Column caption='Tipo'      dataField="TIPO" dataType="string" width={100} />
+          <Column caption='Exercício' dataField="ANO_EXERCICIO" dataType="string" width={100} />
+          <Column caption='Assunto'   dataField="TXT_ASSUNTO" dataType="string" width={100} />
+          <Column caption='Área'      dataField="AREA" dataType="string" width={100} />
+          <Column caption='Unidade Gestora'   dataField="NM_UNID_GESTORA" dataType="string" width={100} />
+          <Column caption='Motivo'   dataField="MOTIVO" dataType="string" width={100} />
+
+          {/* <Pager allowedPageSizes={pageSizes} showPageSizeSelector={true} /> */}
+          <Paging defaultPageSize={10} />
+
+          <Export enabled={true} allowExportSelectedData={false} />
+        </DataGrid>
+      </div>
 
     </div>
-
-    <div style={{ height:"600px", padding:"0px", overflow:'auto' }}>
-    <DataGrid  
-      id="dataGrid"
-      keyExpr="PROTOCOLO"
-      dataSource={dt}
-      allowColumnResizing={true}
-      showBorders={true}
-      rowAlternationEnabled={true}
-      onSelectionChanged={selectItem}
-      style={{padding:"10px 0px"}}
-      onExporting={exportGrid}
-      height={540}
-    >
-      <LoadPanel enabled />
-
-      <Selection mode="single" />
-
-      <SearchPanel visible={true} highlightCaseSensitive={true} />
-
-      <Column type="buttons" width={110}>
-        <Button hint="Clone" icon="find" visible={true} disabled={false} onClick={cloneIconClick} />
-      </Column>
-
-      <Column caption='Protocolo'   dataField="COD_TCE" dataType="string" width={110} />
-      <Column caption='Processo'    dataField="PROCESSO"    dataType="string" width={150} />
-      <Column caption='Tipo'        dataField="TIPO_PROTOCOLO" dataType="string" width={120} />
-      <Column caption='Ofício'      dataField="NR_OFICIO" dataType="string" width={100} />
-      <Column caption='Ano Ofício'  dataField="ANO_OFICIO" dataType="string" width={100} />
-      <Column caption='Meio de Entrada'  dataField="MEIOENTRADA" dataType="string" width={100} />
-      <Column caption='Registro'  dataField="DATA_ENTRADA" dataType="date" format="dd/MM/yyyy" width={110} />
-
-      <Column caption='Tipo'      dataField="TIPO" dataType="string" width={100} />
-      <Column caption='Exercício' dataField="ANO_EXERCICIO" dataType="string" width={100} />
-      <Column caption='Assunto'   dataField="TXT_ASSUNTO" dataType="string" width={100} />
-      <Column caption='Área'      dataField="AREA" dataType="string" width={100} />
-      <Column caption='Unidade Gestora'   dataField="NM_UNID_GESTORA" dataType="string" width={100} />
-      <Column caption='Motivo'   dataField="MOTIVO" dataType="string" width={100} />
-
-      <Pager allowedPageSizes={pageSizes} showPageSizeSelector={true} />
-      <Paging defaultPageSize={10} />
-
-      <Export enabled={true} allowExportSelectedData={false} />
-    </DataGrid>
-    </div>
-
-  </div>
-
-
   )
 }
+
+
+function capitalize(text) {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function exportGrid(e) {
+  const workbook = new Workbook(); 
+  const worksheet = workbook.addWorksheet("protocolos-portal"); 
+  
+  exportDataGrid({ 
+      worksheet: worksheet, 
+      component: e.component
+    }).then(function() {
+      workbook.xlsx.writeBuffer().then(function(buffer) { 
+        saveAs(new Blob([buffer], { type: "application/octet-stream" }), "protocolos.xlsx"); 
+      }); 
+    });
+    
+    e.cancel = true; 
+  }
+  
+  // type: 'percent|currency'
+  const gdpFormat = {
+    type: 'currency',
+  precision: 2,
+};
