@@ -1,7 +1,7 @@
 // 19/04/22 - Tela com DevExtreme
 
 import React, { useCallback, useEffect, useState } from 'react'
-import 'devextreme/dist/css/dx.material.purple.light.compact.css';
+//import 'devextreme/dist/css/dx.material.purple.light.compact.css';
 
 import Button2 from 'devextreme-react/button';
 import {

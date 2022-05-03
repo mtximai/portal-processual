@@ -20,6 +20,7 @@ import saveAs from 'file-saver';
 import { exportDataGrid } from 'devextreme/excel_exporter';
 
 import ValidationSummary from 'devextreme-react/validation-summary';
+
 import {
   Validator,
   RequiredRule,
@@ -31,22 +32,28 @@ import {
   RangeRule,
   AsyncRule,
 } from 'devextreme-react/validator';
+import { Warning } from '@mui/icons-material';
 
+
+interface iCombo {
+  cod: string
+  nome: string
+}
 
 interface iFiltro {
   dtIni: string
   dtFim: string
-  tpRemessa: number
-  areaAtual: number
-  situacaoAtual: number
+  tpRemessa: string
+  areaAtual: string
+  situacaoAtual: string
 }
 
 const filtroIni: iFiltro = {
   dtIni: '01/01/2022',
   dtFim: '01/01/2022',
-  tpRemessa: 0,
-  areaAtual: 0,
-  situacaoAtual: 0
+  tpRemessa: 'D',
+  areaAtual: '',
+  situacaoAtual: ''
 }
 
 const tpRemessa = [
@@ -62,19 +69,64 @@ export default function ProtocoloConsultar() {
   const [filtro, setFiltro] = React.useState<iFiltro>(filtroIni)
   const [msgDtFim, setMsgDtFim] = React.useState('')
 
+  const [area, setArea] = React.useState<iCombo[]>([])
+  const [situacao, setSituacao] = React.useState<iCombo[]>([])
   
-  // React.useEffect(() => {
-  //   console.log('useEffect:', filtro)
-  // }, [filtro])
+
+  React.useEffect(() => {
+    console.log(filtro)
+  }, [filtro])
+
+
+
+  React.useEffect(() => {
+    fetch("/api/getAreas")
+      .then((r) => r.json())
+      .then((p) => setArea(p))
+
+    fetch("/api/getSituacao")
+      .then((r) => r.json())
+      .then((p) => setSituacao(p))
+
+  }, [])
+
 
   function f_click(e) {
-    const buttonText = e.component.option('text');
-    notify(`The ${capitalize(buttonText)} button was clicked`);
-  
-    console.log(filtro)
+    const { isValid } = e.validationGroup.validate(); 
+    
+    if (isValid) {
+      notify('', 'success');
+    }
+    else {
+      notify('Corrija os itens em vermelho!', 'error');
+    }
+
   }
   
+  function f_ValidarDtIni(e) {
+    //const comp = e.component.option('text');
+    console.log(e)
+
+    const ini:number = (new Date(filtro.dtIni)).getTime()
+    const fim:number = (new Date(filtro.dtFim)).getTime()
+
+    let ok = false
+    
+    if (fim < ini) {
+      setMsgDtFim('Data final não pode ser menor que a data inicial!')
+    }
+    else {
+      ok = true
+    }
+
+    return ok
+  }
+
   function f_ValidarDtFim(e) {
+    //const comp = e.component.option('text');
+    console.log(e)
+
+
     const ini:number = (new Date(filtro.dtIni)).getTime()
     const fim:number = (new Date(filtro.dtFim)).getTime()
 
@@ -102,7 +154,7 @@ export default function ProtocoloConsultar() {
         <Item ratio={1}>
           <div className="rect demo-dark">
 
-            <div className="dx-fieldset" style={{marginTop:'0px'}}>
+            <div className="dx-fieldset" style={{marginTop:'0px', marginBottom:'0px'}}>
 
               <div className="dx-field">
                 <div className="dx-field-label">Data inicial</div>
@@ -117,8 +169,10 @@ export default function ProtocoloConsultar() {
                     invalidDateMessage="A data deve estar no seguinte formato: dd/MM/yyyy"
                     onValueChange={(p) => setFiltro({...filtro, dtIni: p}) }
                   >
-                    <Validator>
-                      <RequiredRule message="A data é obrigatória!" />
+                    <Validator validationGroup='validar'>
+                      <CustomRule
+                        validationCallback={f_ValidarDtIni}
+                      />
                     </Validator>
                   </DateBox>
                 </div>
@@ -136,8 +190,7 @@ export default function ProtocoloConsultar() {
                     displayFormat="dd/MM/yyyy"
                     onValueChange={(p) => setFiltro({...filtro, dtFim: p}) }
                   >
-                    <Validator>
-                      <RequiredRule message="A data é obrigatória!" />
+                    <Validator validationGroup='validar'>
                       <CustomRule
                         validationCallback={f_ValidarDtFim}
                         message={msgDtFim}
@@ -153,39 +206,44 @@ export default function ProtocoloConsultar() {
                   <SelectBox dataSource={tpRemessa}
                     displayExpr="descricao"
                     valueExpr="cod"
-                    defaultValue={'D'}
                     searchEnabled={true}
-                    //value={x}
-                    //onValueChanged={(p) => console.log(p.value, x) }
-                    />
+                    value={filtro.tpRemessa}
+                    onValueChanged={(p) => setFiltro({...filtro, tpRemessa: p.value})}
+                  >
+                    <Validator validationGroup='validar'>
+                      <RequiredRule message="Campor obrigatório!" />
+                    </Validator>
+
+                  </SelectBox>
                 </div>
               </div>
 
-              {/* <div style={{marginTop:'15px'}}> */}
+            </div>
 
-              <div className="dx-fieldset">
-                <ValidationSummary id="summary"></ValidationSummary>
-                
-                <Button
-                  text="Limpar"
-                  style={{marginRight:'15px'}}
-                  type='default'
-                  stylingMode="outlined"
-                />
+            <div className="dx-fieldset" style={{marginTop:'15px', marginBottom:'15px'}}>
+              {/* <ValidationSummary id="summary"></ValidationSummary> */}
+              
+              <Button
+                text="Limpar"
+                style={{marginRight:'15px'}}
+                type='default'
+                stylingMode="outlined"
+              />
 
-                <Button
-                  text="Pesquisar"
-                  type='default'
-                  stylingMode="outlined"
-                  onClick={f_click}
-                />
-              </div>
-
+              <Button
+                text="Pesquisar"
+                type='default'
+                stylingMode="outlined"
+                validationGroup='validar'
+                onClick={f_click}
+              />
+              
+              <ValidationSummary />
             </div>
           </div>
-
         </Item>
 
+        {/* 2a COLUNA */}
         <Item ratio={1}>
           <div className="rect demo-light">
 
@@ -194,13 +252,13 @@ export default function ProtocoloConsultar() {
               <div className="dx-field">
                 <div className="dx-field-label">Área atual</div>
                 <div className="dx-field-value">
-                  <SelectBox dataSource={tpRemessa}
-                    displayExpr="descricao"
+                  <SelectBox dataSource={area}
+                    displayExpr="nome"
                     valueExpr="cod"
                     defaultValue={'P'}
                     searchEnabled={true}
-                    //value={x}
-                    //onValueChanged={(p) => console.log(p.value, x) }
+                    value={filtro.tpRemessa}
+                    onValueChanged={(p) => setFiltro({...filtro, tpRemessa: p.value})}
                   />
                 </div>
               </div>
@@ -208,13 +266,13 @@ export default function ProtocoloConsultar() {
               <div className="dx-field">
                 <div className="dx-field-label">Situação atual</div>
                 <div className="dx-field-value">
-                  <SelectBox dataSource={tpRemessa}
-                    displayExpr="descricao"
+                  <SelectBox dataSource={situacao}
+                    displayExpr="nome"
                     valueExpr="cod"
                     defaultValue={'P'}
                     searchEnabled={true}
-                    //value={x}
-                    //onValueChanged={(p) => console.log(p.value, x) }
+                    value={filtro.tpRemessa}
+                    onValueChanged={(p) => setFiltro({...filtro, tpRemessa: p.value})}
                   />
                 </div>
               </div>
@@ -253,7 +311,6 @@ export default function ProtocoloConsultar() {
           <Column caption='Ano Ofício'  dataField="ANO_OFICIO" dataType="string" width={100} />
           <Column caption='Meio de Entrada'  dataField="MEIOENTRADA" dataType="string" width={100} />
           <Column caption='Registro'  dataField="DATA_ENTRADA" dataType="date" format="dd/MM/yyyy" width={110} />
-
           <Column caption='Tipo'      dataField="TIPO" dataType="string" width={100} />
           <Column caption='Exercício' dataField="ANO_EXERCICIO" dataType="string" width={100} />
           <Column caption='Assunto'   dataField="TXT_ASSUNTO" dataType="string" width={100} />
@@ -301,4 +358,3 @@ function exportGrid(e) {
 function elseif(arg0: boolean) {
   throw new Error('Function not implemented.');
 }
-

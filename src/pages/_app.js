@@ -4,11 +4,11 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import { HomeOutlined, ArticleOutlined, NotificationsNoneOutlined } from '@mui/icons-material';
 
+// { text: 'Mesa de trabalho', icon: <MailIcon />, path: '/mesa' },
 const menuItens = [
   { text: 'Home', icon: <HomeOutlined />, path: '/' },
-  { text: 'Mesa de trabalho', icon: <MailIcon />, path: '/mesa' },
-  { text: 'Enviar protocolo', icon: <MailIcon />, path: '/protocoloEnviar' },
   { text: 'Consultar protocolo', icon: <MailIcon />, path: '/protocoloConsultar' },
+  { text: 'Enviar protocolo', icon: <MailIcon />, path: '/protocoloEnviar' },
   { text: 'Caixa Postal', icon: <MailIcon />, path: '/caixaPostal' },
   { text: '-' },
   { text: 'Consulta Processo', icon: <ArticleOutlined />, path: '/consultaProcesso' },
