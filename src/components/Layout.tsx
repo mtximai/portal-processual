@@ -4,6 +4,8 @@ import React, { useState, useEffect, useContext } from 'react';
 
 import 'devextreme/dist/css/dx.common.css';
 import 'devextreme/dist/css/dx.light.css';
+import ptMessages from "devextreme/localization/messages/pt.json";
+import { locale, loadMessages } from "devextreme/localization";
 
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -23,6 +25,9 @@ import ListItemText from '@mui/material/ListItemText';
 import { useRouter } from 'next/router'
 import MyToolbar from './MyToolbar'
 
+
+loadMessages(ptMessages);
+locale('pt');
 
 const drawerWidth = 300;
 

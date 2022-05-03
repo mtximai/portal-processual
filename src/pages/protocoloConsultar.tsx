@@ -33,7 +33,6 @@ import {
 } from 'devextreme-react/validator';
 
 
-
 interface iFiltro {
   dtIni: string
   dtFim: string
@@ -61,6 +60,8 @@ const maxDate = new Date(currentDate.setFullYear(currentDate.getFullYear() - 21)
 export default function ProtocoloConsultar() {
 
   const [filtro, setFiltro] = React.useState<iFiltro>(filtroIni)
+  const [msgDtFim, setMsgDtFim] = React.useState('')
+
   
   // React.useEffect(() => {
   //   console.log('useEffect:', filtro)
@@ -74,14 +75,19 @@ export default function ProtocoloConsultar() {
   }
   
   function f_ValidarDtFim(e) {
-    //console.log(e.value)
-
     const ini:number = (new Date(filtro.dtIni)).getTime()
     const fim:number = (new Date(filtro.dtFim)).getTime()
 
-    //console.log('f_ValidarDtFim', ini, fim, fim >= ini)
+    let ok = false
+    
+    if (fim < ini) {
+      setMsgDtFim('Data final não pode ser menor que a data inicial!')
+    }
+    else {
+      ok = true
+    }
 
-    return (fim >= ini)
+    return ok
   }
 
 
@@ -131,9 +137,10 @@ export default function ProtocoloConsultar() {
                     onValueChange={(p) => setFiltro({...filtro, dtFim: p}) }
                   >
                     <Validator>
+                      <RequiredRule message="A data é obrigatória!" />
                       <CustomRule
                         validationCallback={f_ValidarDtFim}
-                        message="Data final não pode ser menor que a data inicial!"
+                        message={msgDtFim}
                       />
                     </Validator>
                   </DateBox>
@@ -291,3 +298,7 @@ function exportGrid(e) {
     type: 'currency',
   precision: 2,
 };
+function elseif(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}
+
