@@ -76,3 +76,9 @@ https://www.npmjs.com/package/react-pdfobject
 DevExtreme (18/04/22)
 > npm install devextreme@21.2 devextreme-react@21.2 --save --save-exact
 > npm install --save exceljs file-saver
+
+Receber um Upload pela Api
+> npm i formidable@v3
+
+
+  

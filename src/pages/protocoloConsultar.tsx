@@ -2,7 +2,7 @@ import React from 'react'
 //import 'devextreme/dist/css/dx.material.purple.light.compact.css';
 
 import 'devextreme-react/text-area';
-import Button      from 'devextreme-react/button';
+import ButtonDX    from 'devextreme-react/button';
 import DateBox     from 'devextreme-react/date-box';
 import TextBox     from 'devextreme-react/text-box';
 import DropDownBox from 'devextreme-react/drop-down-box';
@@ -13,7 +13,7 @@ import Box, { Item,} from 'devextreme-react/box';
 import notify  from 'devextreme/ui/notify';
 
 import Form, { SimpleItem, GroupItem, Label,} from 'devextreme-react/form';
-import { DataGrid, Column, Selection, Export, LoadPanel, Grouping, GroupPanel, Pager, Paging, SearchPanel,} from 'devextreme-react/data-grid';
+import { DataGrid, Column, Button, Selection, Export, LoadPanel, Grouping, GroupPanel, Pager, Paging, SearchPanel,} from 'devextreme-react/data-grid';
 
 import { Workbook } from 'exceljs';
 import saveAs from 'file-saver';
@@ -34,7 +34,6 @@ import {
 } from 'devextreme-react/validator';
 import { Warning } from '@mui/icons-material';
 
-
 interface iCombo {
   cod: string
   nome: string
@@ -43,23 +42,21 @@ interface iCombo {
 interface iFiltro {
   dtIni: string
   dtFim: string
-  tpRemessa: string
   areaAtual: string
   situacaoAtual: string
 }
 
 const filtroIni: iFiltro = {
-  dtIni: '01/01/2022',
-  dtFim: '01/01/2022',
-  tpRemessa: 'D',
+  dtIni: null,
+  dtFim: null,
   areaAtual: '',
   situacaoAtual: ''
 }
 
-const tpRemessa = [
-  {cod: 'D', descricao: 'Documento'},
-  {cod: 'P', descricao: 'Processo'},
-]
+// const tpRemessa = [
+//   {cod: 'D', descricao: 'Documento'},
+//   {cod: 'P', descricao: 'Processo'},
+// ]
 
 const currentDate = new Date();
 const maxDate = new Date(currentDate.setFullYear(currentDate.getFullYear() - 21));
@@ -67,35 +64,40 @@ const maxDate = new Date(currentDate.setFullYear(currentDate.getFullYear() - 21)
 export default function ProtocoloConsultar() {
 
   const [filtro, setFiltro] = React.useState<iFiltro>(filtroIni)
-  const [msgDtFim, setMsgDtFim] = React.useState('')
+  const [areas, setAreas] = React.useState<iCombo[]>([])
+  const [situacoes, setSituacoes] = React.useState<iCombo[]>([])
 
-  const [area, setArea] = React.useState<iCombo[]>([])
-  const [situacao, setSituacao] = React.useState<iCombo[]>([])
-  
-
-  React.useEffect(() => {
-    console.log(filtro)
-  }, [filtro])
-
-
+  const [protocolos, setProtocolos] = React.useState([])
+  const [refresh, setRefresh] = React.useState('')
+ 
 
   React.useEffect(() => {
     fetch("/api/getAreas")
       .then((r) => r.json())
-      .then((p) => setArea(p))
+      .then((p) => setAreas(p))
 
     fetch("/api/getSituacao")
       .then((r) => r.json())
-      .then((p) => setSituacao(p))
+      .then((p) => setSituacoes(p))
 
   }, [])
+
+  React.useEffect(() => {
+    //console.log('Protocolos: refresh')
+
+    fetch("/api/getMockupMesa")
+      .then((r) => r.json())
+      .then((p) => setProtocolos(p))
+
+    }, [refresh])
 
 
   function f_click(e) {
     const { isValid } = e.validationGroup.validate(); 
     
     if (isValid) {
-      notify('', 'success');
+      notify('Atualizando dados - aguarde...', 'success');
+      setRefresh(Date())
     }
     else {
       notify('Corrija os itens em vermelho!', 'error');
@@ -103,17 +105,24 @@ export default function ProtocoloConsultar() {
 
   }
   
-  function f_ValidarDtIni(e) {
-    //const comp = e.component.option('text');
-    console.log(e)
 
+  function f_ValidarDtIni(e) {
     const ini:number = (new Date(filtro.dtIni)).getTime()
     const fim:number = (new Date(filtro.dtFim)).getTime()
 
     let ok = false
-    
-    if (fim < ini) {
-      setMsgDtFim('Data final não pode ser menor que a data inicial!')
+
+    if (fim >0) {
+      if (ini == 0) {
+        e.rule.message = 'Informe a data inicial!'
+      } else {
+        if (fim >= ini) {
+          ok = true
+        }
+        else {
+          e.rule.message = 'Data inicial deve ser menor ou igual à data final!'
+        }
+      }
     }
     else {
       ok = true
@@ -122,24 +131,33 @@ export default function ProtocoloConsultar() {
     return ok
   }
 
+
   function f_ValidarDtFim(e) {
-    //const comp = e.component.option('text');
-    console.log(e)
-
-
     const ini:number = (new Date(filtro.dtIni)).getTime()
     const fim:number = (new Date(filtro.dtFim)).getTime()
 
-    let ok = false
+    let ok = (fim == 0 && ini == 0) || (fim >0 && fim >= ini)
     
-    if (fim < ini) {
-      setMsgDtFim('Data final não pode ser menor que a data inicial!')
-    }
-    else {
-      ok = true
+    if (!ok) {
+      if (fim == 0) {
+        e.rule.message = 'Informe a data final!'
+      } else if (fim >0) {
+        e.rule.message = 'Data final menor que a data inicial!'
+      }
     }
 
     return ok
+  }
+
+  function f_gridDetalhe(e) {
+    const item = e.row.data
+    const protocolo = item.PROTOCOLO
+
+    //console.log('grid', e.row.rowIndex, protocolo, item )
+
+    notify(`Protocolo: ${protocolo}`, 'success');
+
+    e.event.preventDefault();
   }
 
 
@@ -193,14 +211,13 @@ export default function ProtocoloConsultar() {
                     <Validator validationGroup='validar'>
                       <CustomRule
                         validationCallback={f_ValidarDtFim}
-                        message={msgDtFim}
                       />
                     </Validator>
                   </DateBox>
                 </div>
               </div>
 
-              <div className="dx-field">
+              {/* <div className="dx-field">
                 <div className="dx-field-label">Tipo de remessa</div>
                 <div className="dx-field-value">
                   <SelectBox dataSource={tpRemessa}
@@ -216,21 +233,23 @@ export default function ProtocoloConsultar() {
 
                   </SelectBox>
                 </div>
-              </div>
+              </div> */}
 
             </div>
 
             <div className="dx-fieldset" style={{marginTop:'15px', marginBottom:'15px'}}>
               {/* <ValidationSummary id="summary"></ValidationSummary> */}
+              {/* <ValidationSummary /> */}
               
-              <Button
+              <ButtonDX
                 text="Limpar"
                 style={{marginRight:'15px'}}
                 type='default'
                 stylingMode="outlined"
+                onClick={() => setFiltro(filtroIni)}
               />
 
-              <Button
+              <ButtonDX
                 text="Pesquisar"
                 type='default'
                 stylingMode="outlined"
@@ -238,7 +257,6 @@ export default function ProtocoloConsultar() {
                 onClick={f_click}
               />
               
-              <ValidationSummary />
             </div>
           </div>
         </Item>
@@ -252,13 +270,13 @@ export default function ProtocoloConsultar() {
               <div className="dx-field">
                 <div className="dx-field-label">Área atual</div>
                 <div className="dx-field-value">
-                  <SelectBox dataSource={area}
+                  <SelectBox dataSource={areas}
                     displayExpr="nome"
                     valueExpr="cod"
                     defaultValue={'P'}
                     searchEnabled={true}
-                    value={filtro.tpRemessa}
-                    onValueChanged={(p) => setFiltro({...filtro, tpRemessa: p.value})}
+                    value={filtro.areaAtual}
+                    onValueChanged={(p) => setFiltro({...filtro, areaAtual: p.value})}
                   />
                 </div>
               </div>
@@ -266,13 +284,13 @@ export default function ProtocoloConsultar() {
               <div className="dx-field">
                 <div className="dx-field-label">Situação atual</div>
                 <div className="dx-field-value">
-                  <SelectBox dataSource={situacao}
+                  <SelectBox dataSource={situacoes}
                     displayExpr="nome"
                     valueExpr="cod"
                     defaultValue={'P'}
                     searchEnabled={true}
-                    value={filtro.tpRemessa}
-                    onValueChanged={(p) => setFiltro({...filtro, tpRemessa: p.value})}
+                    value={filtro.situacaoAtual}
+                    onValueChanged={(p) => setFiltro({...filtro, situacaoAtual: p.value})}
                   />
                 </div>
               </div>
@@ -289,7 +307,7 @@ export default function ProtocoloConsultar() {
         <DataGrid  
           id="dataGrid"
           keyExpr="PROTOCOLO"
-          dataSource={'../data/mesa.json'}
+          dataSource={protocolos}
           allowColumnResizing={true}
           showBorders={true}
           rowAlternationEnabled={true}
@@ -303,6 +321,10 @@ export default function ProtocoloConsultar() {
           <Selection mode="single" />
 
           <SearchPanel visible={true} highlightCaseSensitive={true} />
+
+          <Column type="buttons" width={80}>
+            <Button hint="Consulta" icon="find" onClick={f_gridDetalhe} />
+          </Column>
 
           <Column caption='Protocolo'   dataField="COD_TCE" dataType="string" width={110} />
           <Column caption='Processo'    dataField="PROCESSO"    dataType="string" width={150} />
@@ -319,6 +341,8 @@ export default function ProtocoloConsultar() {
           <Column caption='Motivo'   dataField="MOTIVO" dataType="string" width={100} />
 
           {/* <Pager allowedPageSizes={pageSizes} showPageSizeSelector={true} /> */}
+          <Pager allowedPageSizes={[10,100]} showPageSizeSelector={true} />
+
           <Paging defaultPageSize={10} />
 
           <Export enabled={true} allowExportSelectedData={false} />
