@@ -66,8 +66,8 @@ export default function ProtocoloEnviar() {
 
     const doc = {
       msg: "teste",
+      anexo: arquivos[0]
     }
-    //anexo: arquivos[0]
     
     //data.append('doc', JSON.stringify(doc))
 
@@ -76,9 +76,27 @@ export default function ProtocoloEnviar() {
     data.append('msg', 'teste 123')
     data.append('anexo', arquivos[0])
 
+    // headers: {
+    //   'Accept': 'application/json',
+    //   'Content-Type': 'application/json'
+    // },
+    // const res = await fetch (url, {
+    //   method: 'POST',
+    //   body: JSON.stringify(doc)
+    // })
+
+    // headers: {
+    //   'Content-Type': 'multipart/form-data'
+    // },
+
+
     const res = await fetch (url, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
       method: 'POST',
-      body: JSON.stringify(doc)
+        body: JSON.stringify(data)
     })
 
     const r = await res.json()
