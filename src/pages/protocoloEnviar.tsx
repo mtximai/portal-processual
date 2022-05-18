@@ -60,43 +60,6 @@ export default function ProtocoloEnviar() {
     </form>
   )
 
-  async function onClick() {
-
-    const js = {
-      msg: 'teste 345',
-      anexo: arquivos[0]
-    }
-
-
-    const fd = new FormData()
-
-    fd.append('msg', 'teste 123')
-    fd.append('anexo', arquivos[0])
-
-/*
-
-headers: {
-  'Accept': 'application/json',
-  'Content-Type': 'multipart/form-data'
-  'Content-Type': 'application/json'
-},
-
-*/
-
-    const res = await fetch (url, {
-      headers: {
-        'Accept': 'application/json',
-      },
-      method: 'POST',
-      body: fd
-    })
-
-    const r = await res.json()
-
-    console.log('resposta:', r)
-  }
-
-
   function f_onValueChange(e) {
     const files = e.value;
     const qt = e.length
@@ -110,13 +73,6 @@ headers: {
   // headers: {
   //   'Accept': 'application/json',
   //   'Content-Type': 'application/json'
-  // },
-  // const res = await fetch (url, {
-  //   method: 'POST',
-  //   body: JSON.stringify(doc)
-  // })
-
-  // headers: {
   //   'Content-Type': 'multipart/form-data'
   // },
 
@@ -195,15 +151,6 @@ headers: {
   }
 
   const component = <div>
-<<<<<<< HEAD
-  <input
-    type='file'
-    name='file'
-    placeholder='Upload an image'
-    onChange={uploadImage}
-  />
-</div>
-=======
     <input
       type='file'
       name='file'
@@ -211,8 +158,6 @@ headers: {
       onChange={uploadImage}
     />
   </div>
-
->>>>>>> a3f6f43aad742841a5926c8fb910f72e332b6ecf
 
 }
 
