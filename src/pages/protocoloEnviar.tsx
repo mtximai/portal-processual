@@ -12,6 +12,7 @@ export default function ProtocoloEnviar() {
 
   //const url = '/api/uploadDoc'
   //const url = '/api/portaljurisdicionado/processual/uploadArquivo'
+  
   //const url = 'http://localhost:2446/api/portaljurisdicionado/processual/upload'
   //const url = 'http://localhost:2446/api/portaljurisdicionado/processual/uploadDoc'
   const url  = 'http://localhost:2446/api/protocolo/teste'
@@ -19,15 +20,19 @@ export default function ProtocoloEnviar() {
   const [loading, setLoading] = useState(false)
   const [arquivos, setArquivos] = React.useState([])
 
+  const formRef = React.useRef()
+
   React.useEffect(() => {
     console.log('arquivos', arquivos.length)
   }, [arquivos])
 
 
   return (
-    <form id="form" className={styles.form} method="post" action="/api/enviarArquivo" encType="multipart/form-data">
+    <form id="form" ref={formRef} className={styles.form} method="post" action={url}>
 
       <h3>ProtocoloEnviar</h3>
+
+      <input type='text' name='msg' value='teste' />
 
       <div className={styles.fileuploaderContainer}>
         <FileUploader
@@ -49,8 +54,48 @@ export default function ProtocoloEnviar() {
         onClick={onClick}
       />
 
+      <button type="submit">
+        Submit
+      </button>
     </form>
   )
+
+  async function onClick() {
+
+    const js = {
+      msg: 'teste 345',
+      anexo: arquivos[0]
+    }
+
+
+    const fd = new FormData()
+
+    fd.append('msg', 'teste 123')
+    fd.append('anexo', arquivos[0])
+
+/*
+
+headers: {
+  'Accept': 'application/json',
+  'Content-Type': 'multipart/form-data'
+  'Content-Type': 'application/json'
+},
+
+*/
+
+    const res = await fetch (url, {
+      headers: {
+        'Accept': 'application/json',
+      },
+      method: 'POST',
+      body: fd
+    })
+
+    const r = await res.json()
+
+    console.log('resposta:', r)
+  }
+
 
   function f_onValueChange(e) {
     const files = e.value;
@@ -129,6 +174,7 @@ export default function ProtocoloEnviar() {
 
   const uploadImage = async e => {
 
+
     const files = e.target.files
 
     const data = new FormData()
@@ -146,10 +192,10 @@ export default function ProtocoloEnviar() {
 
     setImage(file.secure_url)
     setLoading(false)
-
   }
 
   const component = <div>
+<<<<<<< HEAD
   <input
     type='file'
     name='file'
@@ -157,6 +203,16 @@ export default function ProtocoloEnviar() {
     onChange={uploadImage}
   />
 </div>
+=======
+    <input
+      type='file'
+      name='file'
+      placeholder='Upload an image'
+      onChange={uploadImage}
+    />
+  </div>
+
+>>>>>>> a3f6f43aad742841a5926c8fb910f72e332b6ecf
 
 }
 
