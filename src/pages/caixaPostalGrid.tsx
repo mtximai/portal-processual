@@ -57,12 +57,17 @@ export default function CaixaPostal(props) {
   const router = useRouter();
 
 
-  // const ctxLayout = useLayoutUpdate() as iContext
-  // function f_onClick() {
-  //   ctxLayout.callbackCorreio( (q,f) => f(q+1) )
-  // }
+  const ctxLayout = useLayoutUpdate() as iContext
+
+  function f_onClick() {
+    console.log('xxxxx')
+
+    ctxLayout.callbackCorreio( (q,f) => f(q+1) )
+  }
   
   return (
+    <>
+      <button onClick={f_onClick}>Clique-me</button>    
     
     <Card>
       <CardHeader title="Caixa Postal" />
@@ -86,11 +91,12 @@ export default function CaixaPostal(props) {
             density='compact'
             checkboxSelection
             disableSelectionOnClick
-          />
+            />
         </div>
 
       </CardContent>
     </Card>
+    </>
   )
 }
 
