@@ -13,7 +13,8 @@ export default function ProtocoloEnviar() {
   //const url = '/api/uploadDoc'
   //const url = '/api/portaljurisdicionado/processual/uploadArquivo'
   //const url = 'http://localhost:2446/api/portaljurisdicionado/processual/upload'
-  const url = 'http://localhost:2446/api/portaljurisdicionado/processual/uploadDoc'
+  //const url = 'http://localhost:2446/api/portaljurisdicionado/processual/uploadDoc'
+  const url  = 'http://localhost:2446/api/protocolo/teste'
 
   const [loading, setLoading] = useState(false)
   const [arquivos, setArquivos] = React.useState([])
@@ -33,7 +34,7 @@ export default function ProtocoloEnviar() {
           selectButtonText="Selecionar arquivo"
           labelText=""
           uploadButtonText='Subir arquivo'
-          multiple={true}
+          multiple={false}
           accept="*"
           uploadMode="useButtons"
           onValueChanged={f_onValueChange}
@@ -60,43 +61,61 @@ export default function ProtocoloEnviar() {
     //console.log('f_onValueChange', files )
   }
 
+  
+  // headers: {
+  //   'Accept': 'application/json',
+  //   'Content-Type': 'application/json'
+  // },
+  // const res = await fetch (url, {
+  //   method: 'POST',
+  //   body: JSON.stringify(doc)
+  // })
+
+  // headers: {
+  //   'Content-Type': 'multipart/form-data'
+  // },
+
+
   async function onClick() {
     //notify('Uncomment the line to enable sending a form to the server.');
     //formElement.current.submit();
 
     const doc = {
-      msg: "teste",
+      nome: "Zezinho",
+      idade: 10,
       anexo: arquivos[0]
     }
-    
-    //data.append('doc', JSON.stringify(doc))
 
+    const fd = new FormData()
+    fd.append('nome', 'Huguinho')
+    fd.append('idade', '56')
+    fd.append('anexo', arquivos[0], 'anexo2')
 
-    const data = new FormData()
-    data.append('msg', 'teste 123')
-    data.append('anexo', arquivos[0])
+    const fd2 = new FormData()
+    fd2.append('AnoExercicio', '2022')
 
-    // headers: {
-    //   'Accept': 'application/json',
-    //   'Content-Type': 'application/json'
-    // },
-    // const res = await fetch (url, {
-    //   method: 'POST',
-    //   body: JSON.stringify(doc)
-    // })
+    /*
 
-    // headers: {
-    //   'Content-Type': 'multipart/form-data'
-    // },
+    Se 'Content-type' não for especificado > envia no formato 'Form Data'
+        Api: Upload2([FromBody] Doc doc) > erro 415 qdo tentamos receber via parâmetro
 
+    Se 'Content-type': 'application/json' > envia no formato 'Request Payload'
+        body: fd
+        
+        Api: Upload2([FromBody] Doc doc) > recebe doc=null
+
+    'Content-Type': 'application/json'
+        body: JSON.stringify(doc)
+
+        'Content-Type': 'application/json'
+    */
 
     const res = await fetch (url, {
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
       },
       method: 'POST',
-        body: JSON.stringify(data)
+        body: fd
     })
 
     const r = await res.json()
@@ -105,19 +124,8 @@ export default function ProtocoloEnviar() {
   }
 
 
-
-
   // Exemplo de upload de imagem:
   const [image, setImage] = useState('')
-
-  const component = <div>
-    <input
-      type='file'
-      name='file'
-      placeholder='Upload an image'
-      onChange={uploadImage}
-    />
-  </div>
 
   const uploadImage = async e => {
 
@@ -140,6 +148,15 @@ export default function ProtocoloEnviar() {
     setLoading(false)
 
   }
+
+  const component = <div>
+  <input
+    type='file'
+    name='file'
+    placeholder='Upload an image'
+    onChange={uploadImage}
+  />
+</div>
 
 }
 
