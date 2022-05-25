@@ -4,7 +4,6 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import formidable from "formidable";
 import fs from "fs";
 
-
 const saveFile2 = async (file) => {
   console.log('saveFile', file)
 
@@ -22,7 +21,6 @@ async function saveFile(file) {
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
   //console.log(req.files)
-
 
   const form = formidable({
     multiples: true,
