@@ -12,10 +12,10 @@ export default function ProtocoloEnviar() {
 
   //const url = '/api/uploadDoc'
   //const url = '/api/portaljurisdicionado/processual/uploadArquivo'
-  
   //const url = 'http://localhost:2446/api/portaljurisdicionado/processual/upload'
-  //const url = 'http://localhost:2446/api/portaljurisdicionado/processual/uploadDoc'
-  const url  = 'http://localhost:2446/api/protocolo/teste'
+  //const url  = 'http://localhost:2446/api/protocolo/teste'
+
+  const url = 'http://localhost:2446/api/portaljurisdicionado/processual/uploadDoc'
 
   const [loading, setLoading] = useState(false)
   const [arquivos, setArquivos] = React.useState([])
@@ -90,7 +90,7 @@ export default function ProtocoloEnviar() {
     const fd = new FormData()
     fd.append('nome', 'Huguinho')
     fd.append('idade', '56')
-    fd.append('anexo', arquivos[0], 'anexo2')
+    fd.append('anexo', arquivos[0], 'anexo')
 
     const fd2 = new FormData()
     fd2.append('AnoExercicio', '2022')
