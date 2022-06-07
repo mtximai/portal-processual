@@ -10,6 +10,8 @@ import styles from '../styles/protocoloEnviar.module.css'
 
 export default function ProtocoloEnviar() {
 
+  const [msg, setMsg] = useState('teste')
+
   //const url = '/api/uploadDoc'
   //const url = '/api/portaljurisdicionado/processual/uploadArquivo'
   //const url = 'http://localhost:2446/api/portaljurisdicionado/processual/upload'
@@ -32,7 +34,7 @@ export default function ProtocoloEnviar() {
 
       <h3>ProtocoloEnviar</h3>
 
-      <input type='text' name='msg' value='teste' />
+      <input type='text' name='msg' value={msg} onChange={(p) => setMsg(p.target.value)} />
 
       <div className={styles.fileuploaderContainer}>
         <FileUploader
@@ -51,7 +53,7 @@ export default function ProtocoloEnviar() {
         className={styles.button}
         text="Enviar"
         type="success"
-        onClick={onClick}
+        onClick={onClickEnviar}
       />
 
       <button type="submit">
@@ -66,7 +68,7 @@ export default function ProtocoloEnviar() {
 
     setArquivos(files)
 
-    //console.log('f_onValueChange', files )
+    console.log('f_onValueChange', files )
   }
 
   
@@ -77,9 +79,11 @@ export default function ProtocoloEnviar() {
   // },
 
 
-  async function onClick() {
+  async function onClickEnviar() {
     //notify('Uncomment the line to enable sending a form to the server.');
     //formElement.current.submit();
+
+    console.log(arquivos[0])
 
     const doc = {
       nome: "Zezinho",
@@ -90,7 +94,7 @@ export default function ProtocoloEnviar() {
     const fd = new FormData()
     fd.append('nome', 'Huguinho')
     fd.append('idade', '56')
-    fd.append('anexo', arquivos[0], 'anexo')
+    fd.append('anexo', arquivos[0], arquivos[0].name)
 
     const fd2 = new FormData()
     fd2.append('AnoExercicio', '2022')
