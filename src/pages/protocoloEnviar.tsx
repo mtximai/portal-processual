@@ -10,6 +10,13 @@ import styles from '../styles/protocoloEnviar.module.css'
 
 export default function ProtocoloEnviar() {
 
+  const v = process.env.MY_VAR
+  console.log('MY_VAR:', v)
+
+  const x = process.env.NEXT_PUBLIC_ETCM_URL
+  console.log('NEXT_PUBLIC_ETCM_URL:', x)
+
+
   const [msg, setMsg] = useState('teste')
 
   //const url = '/api/uploadDoc'

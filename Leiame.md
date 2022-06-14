@@ -1,6 +1,11 @@
 10/03/22
 
-> npm i   # instala as dependências
+> npm i         # instala as dependências
+> npm run dev   # roda pelo código
+
+> npm run build
+> npm start       # roda a partir do build
+
 
 . Criado o arquivo /tsconfig.js (vazio)
 
